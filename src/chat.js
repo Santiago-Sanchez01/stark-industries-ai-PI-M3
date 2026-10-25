@@ -1,45 +1,29 @@
 
-const messages = [
-  {
-    role: "model",
-    text: "Bueno, bueno... Parece que alguien logró acceder a mi sistema. Soy Tony Stark. ¿Qué necesitás, genio?",
-  },
-];
+const WELCOME_MESSAGE = {
+  role: "model",
+  text: "Bueno, bueno... Parece que alguien logró acceder a mi sistema. Soy Tony Stark. ¿Qué necesitás, genio?",
+};
+
+// Historial mantenido durante la sesión de la SPA
+const messages = [];
 
 let isTyping = false;
+let errorMessage = "";
 
-// Devuelve una respuesta simulada de Tony Stark
-function getMockResponse() {
-  const responses = [
-    "Interesante pregunta. Normalmente cobraría por una respuesta así.",
-    "Soy Tony Stark. Resolver problemas imposibles es prácticamente mi pasatiempo.",
-    "J.A.R.V.I.S. probablemente ya tendría una respuesta. Pero hoy estoy de buen humor.",
-    "La tecnología es increíble. Especialmente cuando yo la diseño.",
-    "¿Sabés qué necesita esa idea? Un reactor Arc y un poco de genialidad.",
-  ];
-
-  const randomIndex = Math.floor(
-    Math.random() * responses.length
-  );
-
-  return responses[randomIndex];
-}
-
-// Crea un elemento HTML para mostrar un mensaje
+// Construye visualmente un mensaje
 function createMessageElement(message) {
   const messageDiv = document.createElement("div");
 
   messageDiv.classList.add("message");
 
-  if (message.role === "user") {
-    messageDiv.classList.add("user-message");
-  } else {
-    messageDiv.classList.add("ai-message");
-  }
+  messageDiv.classList.add(
+    message.role === "user"
+      ? "user-message"
+      : "ai-message"
+  );
 
   const author = document.createElement("span");
-  author.classList.add("message-author");
-
+  author.className = "message-author";
   author.textContent =
     message.role === "user" ? "VOS" : "TONY STARK";
 
@@ -51,7 +35,7 @@ function createMessageElement(message) {
   return messageDiv;
 }
 
-// Dibuja la conversación en pantalla
+// Renderiza todo el historial de conversación
 function renderMessages() {
   const container = document.querySelector("#messages");
 
@@ -59,13 +43,20 @@ function renderMessages() {
 
   container.replaceChildren();
 
+  // Mensaje inicial, solamente visual
+  container.appendChild(
+    createMessageElement(WELCOME_MESSAGE)
+  );
+
   messages.forEach((message) => {
-    const element = createMessageElement(message);
-    container.appendChild(element);
+    container.appendChild(
+      createMessageElement(message)
+    );
   });
 
   if (isTyping) {
     const indicator = document.createElement("div");
+
     indicator.className = "message ai-message typing";
     indicator.textContent = "Tony Stark está escribiendo...";
     indicator.setAttribute("role", "status");
@@ -73,20 +64,59 @@ function renderMessages() {
     container.appendChild(indicator);
   }
 
-  // Desplazamos el chat al último mensaje
   container.scrollTop = container.scrollHeight;
 }
 
-// Simula una petición asíncrona a una IA
-function simulateAIResponse() {
-  return new Promise((resolve) => {
-    setTimeout(() => {
-      resolve(getMockResponse());
-    }, 1200);
-  });
+// Muestra errores sin agregarlos al historial de Gemini
+function renderError() {
+  const container = document.querySelector("#chat-error");
+
+  if (!container) return;
+
+  container.textContent = errorMessage;
+  container.hidden = !errorMessage;
 }
 
-// Maneja el envío de un mensaje
+// Actualiza el estado del botón
+function updateFormState() {
+  const button = document.querySelector(".btn-send");
+
+  if (button) {
+    button.disabled = isTyping;
+    button.textContent = isTyping
+      ? "ESPERANDO..."
+      : "ENVIAR →";
+  }
+}
+
+// Envía el historial a nuestro backend
+async function requestGeminiReply() {
+  const response = await fetch("/api/functions", {
+    method: "POST",
+    headers: {
+      "Content-Type": "application/json",
+    },
+    body: JSON.stringify({
+      messages,
+    }),
+  });
+
+  const data = await response.json();
+
+  if (!response.ok) {
+    throw new Error(
+      data.error || "No se pudo conectar con Tony Stark."
+    );
+  }
+
+  if (typeof data.reply !== "string" || !data.reply.trim()) {
+    throw new Error("La respuesta recibida está vacía.");
+  }
+
+  return data.reply.trim();
+}
+
+// Maneja el envío de cada mensaje
 async function handleSubmit(event) {
   event.preventDefault();
 
@@ -98,51 +128,60 @@ async function handleSubmit(event) {
 
   const text = input.value.trim();
 
-  // No permitimos enviar mensajes vacíos
   if (!text) return;
+
+  if (messages.length >= 40) {
+    errorMessage =
+      "Se alcanzó el límite de esta conversación. Recargá la página para comenzar otra.";
+    renderError();
+    return;
+  }
 
   messages.push({
     role: "user",
-    text: text,
+    text,
   });
 
   input.value = "";
   isTyping = true;
+  errorMessage = "";
 
   renderMessages();
+  renderError();
   updateFormState();
 
   try {
-    const response = await simulateAIResponse();
+    const reply = await requestGeminiReply();
 
     messages.push({
       role: "model",
-      text: response,
+      text: reply,
     });
   } catch (error) {
-    console.error("Error en el chat:", error);
+    // Quitamos el mensaje fallido del historial
+    // para permitir reintentar correctamente.
+    messages.pop();
 
-    messages.push({
-      role: "model",
-      text: "Parece que mi sistema tuvo un problema. Intentemos nuevamente.",
-    });
+    errorMessage =
+      error.message || "Ocurrió un error inesperado.";
+
+    // Recuperamos el mensaje original para reintentarlo
+    const currentInput =
+      document.querySelector("#message-input");
+
+    if (currentInput) {
+      currentInput.value = text;
+    }
   } finally {
     isTyping = false;
+
     renderMessages();
+    renderError();
     updateFormState();
   }
 }
 
-// Evita enviar mensajes mientras llega una respuesta
-function updateFormState() {
-  const button = document.querySelector(".btn-send");
-
-  if (button) {
-    button.disabled = isTyping;
-  }
-}
-
-// Inicializa el chat cuando entramos a /chat
+// Se ejecuta al ingresar en la vista Chat
 export function initChat() {
   const form = document.querySelector("#chat-form");
 
@@ -151,5 +190,7 @@ export function initChat() {
   form.addEventListener("submit", handleSubmit);
 
   renderMessages();
+  renderError();
   updateFormState();
 }
+

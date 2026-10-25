@@ -460,3 +460,20 @@ main {
     animation: none;
   }
 }
+
+
+/* ===== ERRORES DEL CHAT ===== */
+.chat-error:not([hidden]) {
+  margin: 10px 15px;
+  padding: 12px;
+  border: 1px solid #ff6b6b;
+  border-radius: 6px;
+  background: rgba(255, 60, 60, 0.1);
+  color: #ffaaaa;
+  font-size: 13px;
+}
+
+.chat-error[hidden] {
+  display: none;
+}
+

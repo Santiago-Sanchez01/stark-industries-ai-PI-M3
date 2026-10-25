@@ -82,8 +82,15 @@ function renderChat() {
           id="messages"
           aria-live="polite">
           </div>
+          
+          <div
+           id="chat-error"
+            class="chat-error"
+            role="alert"
+            hidden>
+          </div>
 
-        <form class="chat-form" id="chat-form">
+           <form class="chat-form" id="chat-form"> 
           <input
             id="message-input"
             type="text"
