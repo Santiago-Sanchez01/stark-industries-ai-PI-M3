@@ -1,4 +1,9 @@
 
+import {
+  toGeminiContents,
+  extractGeminiText,
+} from "../src/utils.js";
+
 const MODEL = "gemini-3.5-flash-lite";
 
 const SYSTEM_PROMPT = `
@@ -71,14 +76,7 @@ export default async function handler(req, res) {
   }
 
   // Convertimos nuestro historial al formato de Gemini
-  const contents = messages.map((message) => ({
-    role: message.role,
-    parts: [
-      {
-        text: message.text,
-      },
-    ],
-  }));
+ const contents = toGeminiContents(messages);
 
   try {
     const response = await fetch(
@@ -124,11 +122,7 @@ export default async function handler(req, res) {
     }
 
     // Extraemos las partes de texto de la respuesta
-    const reply = data.candidates?.[0]?.content?.parts
-      ?.filter((part) => typeof part.text === "string")
-      .map((part) => part.text)
-      .join("\n")
-      .trim();
+    const reply = extractGeminiText(data);
 
     if (!reply) {
       return res.status(502).json({

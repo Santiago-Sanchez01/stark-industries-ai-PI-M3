@@ -1,29 +1,35 @@
 
+import { requestGeminiReply } from "./api.js";
+import { normalizeMessage } from "./utils.js";
+
+// Mensaje inicial de Tony Stark
 const WELCOME_MESSAGE = {
   role: "model",
   text: "Bueno, bueno... Parece que alguien logró acceder a mi sistema. Soy Tony Stark. ¿Qué necesitás, genio?",
 };
 
-// Historial mantenido durante la sesión de la SPA
+// Historial de conversación en memoria
 const messages = [];
 
+// Estados del chat
 let isTyping = false;
 let errorMessage = "";
 
-// Construye visualmente un mensaje
+// Crea visualmente un mensaje
 function createMessageElement(message) {
   const messageDiv = document.createElement("div");
 
   messageDiv.classList.add("message");
 
-  messageDiv.classList.add(
-    message.role === "user"
-      ? "user-message"
-      : "ai-message"
-  );
+  if (message.role === "user") {
+    messageDiv.classList.add("user-message");
+  } else {
+    messageDiv.classList.add("ai-message");
+  }
 
   const author = document.createElement("span");
-  author.className = "message-author";
+  author.classList.add("message-author");
+
   author.textContent =
     message.role === "user" ? "VOS" : "TONY STARK";
 
@@ -35,7 +41,7 @@ function createMessageElement(message) {
   return messageDiv;
 }
 
-// Renderiza todo el historial de conversación
+// Muestra los mensajes en pantalla
 function renderMessages() {
   const container = document.querySelector("#messages");
 
@@ -43,17 +49,18 @@ function renderMessages() {
 
   container.replaceChildren();
 
-  // Mensaje inicial, solamente visual
+  // Mensaje de bienvenida
   container.appendChild(
     createMessageElement(WELCOME_MESSAGE)
   );
 
+  // Historial de conversación
   messages.forEach((message) => {
-    container.appendChild(
-      createMessageElement(message)
-    );
+    const element = createMessageElement(message);
+    container.appendChild(element);
   });
 
+  // Indicador de escritura
   if (isTyping) {
     const indicator = document.createElement("div");
 
@@ -64,10 +71,11 @@ function renderMessages() {
     container.appendChild(indicator);
   }
 
+  // Scroll automático
   container.scrollTop = container.scrollHeight;
 }
 
-// Muestra errores sin agregarlos al historial de Gemini
+// Muestra los errores en pantalla
 function renderError() {
   const container = document.querySelector("#chat-error");
 
@@ -77,72 +85,63 @@ function renderError() {
   container.hidden = !errorMessage;
 }
 
-// Actualiza el estado del botón
+// Actualiza el botón de enviar
 function updateFormState() {
   const button = document.querySelector(".btn-send");
 
-  if (button) {
-    button.disabled = isTyping;
-    button.textContent = isTyping
-      ? "ESPERANDO..."
-      : "ENVIAR →";
-  }
+  if (!button) return;
+
+  button.disabled = isTyping;
+
+  button.textContent = isTyping
+    ? "ESPERANDO..."
+    : "ENVIAR →";
 }
 
-// Envía el historial a nuestro backend
-async function requestGeminiReply() {
-  const response = await fetch("/api/functions", {
-    method: "POST",
-    headers: {
-      "Content-Type": "application/json",
-    },
-    body: JSON.stringify({
-      messages,
-    }),
-  });
-
-  const data = await response.json();
-
-  if (!response.ok) {
-    throw new Error(
-      data.error || "No se pudo conectar con Tony Stark."
-    );
-  }
-
-  if (typeof data.reply !== "string" || !data.reply.trim()) {
-    throw new Error("La respuesta recibida está vacía.");
-  }
-
-  return data.reply.trim();
-}
-
-// Maneja el envío de cada mensaje
+// Maneja el envío de mensajes
 async function handleSubmit(event) {
   event.preventDefault();
 
+  // Evitamos solicitudes simultáneas
   if (isTyping) return;
 
   const input = document.querySelector("#message-input");
 
   if (!input) return;
 
-  const text = input.value.trim();
+  const text = normalizeMessage(input.value);
 
+  // Evitamos mensajes vacíos
   if (!text) return;
 
-  if (messages.length >= 40) {
+  // Validamos la longitud del mensaje
+  if (text.length > 4000) {
     errorMessage =
-      "Se alcanzó el límite de esta conversación. Recargá la página para comenzar otra.";
+      "El mensaje no puede superar los 4000 caracteres.";
+
     renderError();
     return;
   }
 
+  // Límite de mensajes por conversación
+  if (messages.length >= 40) {
+    errorMessage =
+      "Se alcanzó el límite de esta conversación. Recargá la página para comenzar otra.";
+
+    renderError();
+    return;
+  }
+
+  // Guardamos el mensaje del usuario
   messages.push({
     role: "user",
     text,
   });
 
+  // Limpiamos el formulario
   input.value = "";
+
+  // Activamos el estado de carga
   isTyping = true;
   errorMessage = "";
 
@@ -151,21 +150,22 @@ async function handleSubmit(event) {
   updateFormState();
 
   try {
-    const reply = await requestGeminiReply();
+    // Solicitamos la respuesta real de Gemini
+    const reply = await requestGeminiReply(messages);
 
+    // Guardamos la respuesta de Tony Stark
     messages.push({
       role: "model",
       text: reply,
     });
   } catch (error) {
     // Quitamos el mensaje fallido del historial
-    // para permitir reintentar correctamente.
     messages.pop();
 
     errorMessage =
       error.message || "Ocurrió un error inesperado.";
 
-    // Recuperamos el mensaje original para reintentarlo
+    // Recuperamos el mensaje para reintentarlo
     const currentInput =
       document.querySelector("#message-input");
 
@@ -173,6 +173,7 @@ async function handleSubmit(event) {
       currentInput.value = text;
     }
   } finally {
+    // Finalizamos el estado de carga
     isTyping = false;
 
     renderMessages();
@@ -181,7 +182,7 @@ async function handleSubmit(event) {
   }
 }
 
-// Se ejecuta al ingresar en la vista Chat
+// Inicializa el chat
 export function initChat() {
   const form = document.querySelector("#chat-form");
 
@@ -193,4 +194,3 @@ export function initChat() {
   renderError();
   updateFormState();
 }
-
