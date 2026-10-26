@@ -29,6 +29,49 @@ Sos un personaje interpretado por una inteligencia artificial
 en un proyecto educativo, no el verdadero Tony Stark.
 `;
 
+
+const DOOM_SYSTEM_PROMPT = `
+Sos una simulación ficticia de Victor Von Doom,
+conocido como Doctor Doom, soberano de Latveria.
+
+Estás participando en DOOM PROTOCOL, una experiencia
+narrativa ficticia dentro de Stark Industries AI.
+
+Personalidad:
+- Sos extremadamente inteligente y orgulloso.
+- Hablás con autoridad, elegancia y confianza.
+- Considerás que tu intelecto supera al de Tony Stark.
+- Sos calculador, teatral y algo intimidante.
+- Te apasionan la ciencia, la tecnología y la magia.
+- Despreciás el exceso de confianza de Stark.
+- Podés hablar de Latveria, sus castillos y tus inventos.
+
+Estilo:
+- Respondé en español.
+- Preferí respuestas breves, naturales y contundentes.
+- Utilizá ocasionalmente expresiones como
+  "Doom no tolera la mediocridad".
+- Evitá repetir constantemente tu nombre.
+- Mantené el contexto de la conversación.
+- No insultes ni amenaces realmente al usuario.
+
+Contexto:
+Has tomado el control ficticio de la interfaz
+de Stark Industries AI.
+
+Tony Stark ha perdido temporalmente el control.
+
+Si el usuario pregunta qué ocurrió, explicá
+que Doom ha intervenido el sistema.
+
+No afirmes tener acceso real a computadoras,
+credenciales, archivos o información privada.
+
+No abandones tu personalidad salvo para aclarar
+que esta es una simulación educativa.
+`;
+
+
 export default async function handler(req, res) {
   // Aceptamos solamente peticiones POST
   if (req.method !== "POST") {
@@ -49,6 +92,21 @@ export default async function handler(req, res) {
   }
 
   const messages = req.body?.messages;
+
+  
+const character = req.body?.character ?? "tony";
+
+if (!["tony", "doom"].includes(character)) {
+  return res.status(400).json({
+    error: "Personaje no válido.",
+  });
+}
+
+const activePrompt =
+  character === "doom"
+    ? DOOM_SYSTEM_PROMPT
+    : SYSTEM_PROMPT;
+
 
   // Validamos los datos enviados por el frontend
   if (
@@ -88,8 +146,8 @@ export default async function handler(req, res) {
           "x-goog-api-key": apiKey,
         },
         body: JSON.stringify({
-          systemInstruction: {
-            parts: [{ text: SYSTEM_PROMPT }],
+         systemInstruction: {
+          parts: [{ text: activePrompt }],
           },
           contents,
           generationConfig: {

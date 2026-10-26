@@ -1,7 +1,10 @@
 
 import { requestGeminiReply } from "./api.js";
-import { normalizeMessage } from "./utils.js";
-import { detectDoomReference } from "./utils.js";
+
+import {
+  normalizeMessage,
+  detectDoomReference,
+} from "./utils.js";
 
 import {
   activateDoomProtocol,
@@ -9,47 +12,76 @@ import {
   PROTOCOL_STATES,
 } from "./doomProtocol.js";
 
+// Mensajes visibles en la interfaz
+const displayMessages = [
+  {
+    role: "model",
+    character: "tony",
+    text: "Bueno, bueno... Parece que alguien logró acceder a mi sistema. Soy Tony Stark. ¿Qué necesitás, genio?",
+  },
+];
 
-// Mensaje inicial de Tony Stark
-const WELCOME_MESSAGE = {
-  role: "model",
-  text: "Bueno, bueno... Parece que alguien logró acceder a mi sistema. Soy Tony Stark. ¿Qué necesitás, genio?",
+// Historial independiente para cada personaje
+const histories = {
+  tony: [],
+  doom: [],
 };
 
-// Historial de conversación en memoria
-const messages = [];
-
-// Estados del chat
 let isTyping = false;
 let errorMessage = "";
+let pendingDoomIntro = false;
+let previousProtocolState = PROTOCOL_STATES.NORMAL;
 
-// Crea visualmente un mensaje
+// Determina qué personaje está activo
+function getActiveCharacter() {
+  return getProtocolState() === PROTOCOL_STATES.DOOM
+    ? "doom"
+    : "tony";
+}
+
+// Construye visualmente un mensaje
 function createMessageElement(message) {
-  const messageDiv = document.createElement("div");
+  const element = document.createElement("div");
 
-  messageDiv.classList.add("message");
-
-  if (message.role === "user") {
-    messageDiv.classList.add("user-message");
-  } else {
-    messageDiv.classList.add("ai-message");
+  if (message.role === "notice") {
+    element.className = "protocol-notice";
+    element.textContent = message.text;
+    return element;
   }
 
-  const author = document.createElement("span");
-  author.classList.add("message-author");
+  element.className = "message";
 
-  author.textContent =
-    message.role === "user" ? "VOS" : "TONY STARK";
+  element.classList.add(
+    message.role === "user"
+      ? "user-message"
+      : "ai-message"
+  );
+
+  const author = document.createElement("span");
+  author.className = "message-author";
+
+  if (message.role === "user") {
+    author.textContent = "VOS";
+  } else {
+    author.textContent =
+      message.character === "doom"
+        ? "DOCTOR DOOM"
+        : "TONY STARK";
+  }
 
   const content = document.createElement("p");
   content.textContent = message.text;
 
-  messageDiv.append(author, content);
+  element.append(author, content);
 
-  return messageDiv;
+  if (message.character === "doom") {
+    element.classList.add("doom-message");
+  }
+
+  return element;
 }
 
-// Muestra los mensajes en pantalla
+// Dibuja los mensajes en pantalla
 function renderMessages() {
   const container = document.querySelector("#messages");
 
@@ -57,33 +89,28 @@ function renderMessages() {
 
   container.replaceChildren();
 
-  // Mensaje de bienvenida
-  container.appendChild(
-    createMessageElement(WELCOME_MESSAGE)
-  );
-
-  // Historial de conversación
-  messages.forEach((message) => {
-    const element = createMessageElement(message);
-    container.appendChild(element);
+  displayMessages.forEach((message) => {
+    container.appendChild(
+      createMessageElement(message)
+    );
   });
 
-  // Indicador de escritura
   if (isTyping) {
     const indicator = document.createElement("div");
-
     indicator.className = "message ai-message typing";
-    indicator.textContent = "Tony Stark está escribiendo...";
-    indicator.setAttribute("role", "status");
+
+    indicator.textContent =
+      getActiveCharacter() === "doom"
+        ? "Doctor Doom está escribiendo..."
+        : "Tony Stark está escribiendo...";
 
     container.appendChild(indicator);
   }
 
-  // Scroll automático
   container.scrollTop = container.scrollHeight;
 }
 
-// Muestra los errores en pantalla
+// Muestra errores
 function renderError() {
   const container = document.querySelector("#chat-error");
 
@@ -93,84 +120,39 @@ function renderError() {
   container.hidden = !errorMessage;
 }
 
-// Actualiza el botón de enviar
-
+// Controla el estado del formulario
 function updateFormState() {
   const button = document.querySelector(".btn-send");
-
-  if (!button) return;
-
-  const protocolIsNormal =
-    getProtocolState() === PROTOCOL_STATES.NORMAL;
-
-  button.disabled = isTyping || !protocolIsNormal;
-
-  button.textContent = isTyping
-    ? "ESPERANDO..."
-    : "ENVIAR →";
-}
-
-
-// Maneja el envío de mensajes
-async function handleSubmit(event) {
-  event.preventDefault();
-
-  // Evitamos solicitudes simultáneas
-  if (isTyping) return;
-
   const input = document.querySelector("#message-input");
+  const recoverButton =
+    document.querySelector("#recover-button");
 
-  if (!input) return;
+  const state = getProtocolState();
 
-  const text = normalizeMessage(input.value);
+  const canChat =
+    state === PROTOCOL_STATES.NORMAL ||
+    state === PROTOCOL_STATES.DOOM;
 
-  // Evitamos mensajes vacíos
-  if (!text) return;
-
-  // Validamos la longitud del mensaje
-  if (text.length > 4000) {
-    errorMessage =
-      "El mensaje no puede superar los 4000 caracteres.";
-
-    renderError();
-    return;
+  if (input) {
+    input.disabled = !canChat;
   }
 
-  // Límite de mensajes por conversación
-  if (messages.length >= 40) {
-    errorMessage =
-      "Se alcanzó el límite de esta conversación. Recargá la página para comenzar otra.";
+  if (button) {
+    button.disabled = isTyping || !canChat;
 
-    renderError();
-    return;
+    button.textContent = isTyping
+      ? "ESPERANDO..."
+      : "ENVIAR →";
   }
 
-  // Guardamos el mensaje del usuario
-  messages.push({
-    role: "user",
-    text,
-  });
-
-  // Limpiamos el formulario
-  input.value = "";
-  
-// Detectamos si el usuario mencionó a Doom
-if (
-  getProtocolState() === PROTOCOL_STATES.NORMAL &&
-  detectDoomReference(text)
-) {
-  errorMessage = "";
-
-  renderMessages();
-  renderError();
-
-  activateDoomProtocol();
-  updateFormState();
-
-  return;
+  // No restauramos el sistema durante una petición
+  if (recoverButton) {
+    recoverButton.disabled = isTyping;
+  }
 }
 
-  // Activamos el estado de carga
+// Consulta a Gemini utilizando el personaje indicado
+async function sendReply(character) {
   isTyping = true;
   errorMessage = "";
 
@@ -179,30 +161,36 @@ if (
   updateFormState();
 
   try {
-    // Solicitamos la respuesta real de Gemini
-    const reply = await requestGeminiReply(messages);
+    const reply = await requestGeminiReply(
+      histories[character],
+      character
+    );
 
-    // Guardamos la respuesta de Tony Stark
-    messages.push({
+    histories[character].push({
       role: "model",
       text: reply,
     });
+
+    displayMessages.push({
+      role: "model",
+      character,
+      text: reply,
+    });
   } catch (error) {
-    // Quitamos el mensaje fallido del historial
-    messages.pop();
+    // Retiramos del historial de Gemini el
+    // mensaje que no obtuvo respuesta.
+    const failedMessage = histories[character].pop();
 
     errorMessage =
       error.message || "Ocurrió un error inesperado.";
 
-    // Recuperamos el mensaje para reintentarlo
-    const currentInput =
-      document.querySelector("#message-input");
+    // Recuperamos el texto para poder reintentarlo
+    const input = document.querySelector("#message-input");
 
-    if (currentInput) {
-      currentInput.value = text;
+    if (input && failedMessage) {
+      input.value = failedMessage.text;
     }
   } finally {
-    // Finalizamos el estado de carga
     isTyping = false;
 
     renderMessages();
@@ -211,7 +199,135 @@ if (
   }
 }
 
-// Inicializa el chat
+// Envía el mensaje del usuario
+async function handleSubmit(event) {
+  event.preventDefault();
+
+  const state = getProtocolState();
+
+  if (isTyping) return;
+
+  if (
+    state !== PROTOCOL_STATES.NORMAL &&
+    state !== PROTOCOL_STATES.DOOM
+  ) {
+    return;
+  }
+
+  const input = document.querySelector("#message-input");
+
+  if (!input) return;
+
+  const text = normalizeMessage(input.value);
+
+  if (!text) return;
+
+  if (text.length > 4000) {
+    errorMessage = "El mensaje supera los 4000 caracteres.";
+    renderError();
+    return;
+  }
+
+  const character = getActiveCharacter();
+
+  if (histories[character].length >= 40) {
+    errorMessage =
+      "Se alcanzó el límite de mensajes para este personaje.";
+    renderError();
+    return;
+  }
+
+  // Guardamos el mensaje en pantalla
+  displayMessages.push({
+    role: "user",
+    text,
+  });
+
+  input.value = "";
+  errorMessage = "";
+
+  // Activación automática de DOOM PROTOCOL
+  if (
+    state === PROTOCOL_STATES.NORMAL &&
+    detectDoomReference(text)
+  ) {
+    // Comenzamos una conversación nueva con Doom.
+    histories.doom = [
+      {
+        role: "user",
+        text,
+      },
+    ];
+
+    pendingDoomIntro = true;
+
+    renderMessages();
+    renderError();
+
+    activateDoomProtocol();
+    return;
+  }
+
+  // Conversación normal con el personaje activo
+  histories[character].push({
+    role: "user",
+    text,
+  });
+
+  await sendReply(character);
+}
+
+// Reacciona a los cambios de DOOM PROTOCOL
+document.addEventListener("protocolchange", (event) => {
+  const state = event.detail.state;
+
+  if (state === PROTOCOL_STATES.ALERT) {
+    displayMessages.push({
+      role: "notice",
+      text: "⚠ J.A.R.V.I.S.: Intrusión detectada. Perdiendo el control del sistema...",
+    });
+  }
+
+  if (
+    state === PROTOCOL_STATES.DOOM &&
+    pendingDoomIntro
+  ) {
+    pendingDoomIntro = false;
+
+    displayMessages.push({
+      role: "notice",
+      text: "DOOM PROTOCOL ACTIVE // LATVERIA HA TOMADO EL CONTROL",
+    });
+
+    // Primera respuesta real de Doctor Doom
+    void sendReply("doom");
+  }
+
+  if (state === PROTOCOL_STATES.RECOVERY) {
+    displayMessages.push({
+      role: "notice",
+      text: "J.A.R.V.I.S.: Protocolo de recuperación iniciado. Restaurando Stark Industries...",
+    });
+  }
+
+  if (
+    state === PROTOCOL_STATES.NORMAL &&
+    previousProtocolState === PROTOCOL_STATES.RECOVERY
+  ) {
+    displayMessages.push({
+      role: "notice",
+      text: "✓ J.A.R.V.I.S.: Sistemas restaurados. Tony Stark vuelve a estar disponible.",
+    });
+  }
+
+  previousProtocolState = state;
+
+  renderMessages();
+  renderError();
+  updateFormState();
+});
+
+// Inicializa la vista Chat
 export function initChat() {
   const form = document.querySelector("#chat-form");
 
@@ -223,7 +339,3 @@ export function initChat() {
   renderError();
   updateFormState();
 }
-
-document.addEventListener("protocolchange", () => {
-  updateFormState();
-});

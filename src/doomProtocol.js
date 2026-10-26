@@ -54,10 +54,13 @@ function updateProtocolUI() {
       currentState !== PROTOCOL_STATES.DOOM;
   }
 
-  if (input) {
-    input.disabled =
-      currentState !== PROTOCOL_STATES.NORMAL;
-  }
+ 
+if (input) {
+  input.disabled =
+    currentState === PROTOCOL_STATES.ALERT ||
+    currentState === PROTOCOL_STATES.RECOVERY;
+}
+
 
   document.dispatchEvent(
     new CustomEvent("protocolchange", {

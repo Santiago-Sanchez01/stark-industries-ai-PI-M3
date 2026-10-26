@@ -1,11 +1,10 @@
 
 import { normalizeMessage } from "./utils.js";
 
-/**
- * Solicita una respuesta de Tony Stark
- * mediante nuestra Vercel Serverless Function.
- */
-export async function requestGeminiReply(messages) {
+export async function requestGeminiReply(
+  messages,
+  character = "tony"
+) {
   const response = await fetch("/api/functions", {
     method: "POST",
     headers: {
@@ -13,6 +12,7 @@ export async function requestGeminiReply(messages) {
     },
     body: JSON.stringify({
       messages,
+      character,
     }),
   });
 
@@ -20,7 +20,7 @@ export async function requestGeminiReply(messages) {
 
   if (!response.ok) {
     throw new Error(
-      data.error || "No se pudo conectar con Tony Stark."
+      data.error || "No se pudo obtener una respuesta."
     );
   }
 
