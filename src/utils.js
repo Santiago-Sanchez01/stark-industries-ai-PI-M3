@@ -58,3 +58,18 @@ export function extractGeminiText(data) {
     .join("\n")
     .trim();
 }
+
+
+export function detectDoomReference(text) {
+  if (typeof text !== "string") return false;
+
+  const normalized = text
+    .toLowerCase()
+    .normalize("NFD")
+    .replace(/[\u0300-\u036f]/g, "");
+
+  const references =
+    /\b(doom|latveria|latveriano|latveriana|latverianos|latverianas|victor von doom|doctor muerte|dr\.?\s+muerte)\b/;
+
+  return references.test(normalized);
+}

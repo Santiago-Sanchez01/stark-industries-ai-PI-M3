@@ -477,3 +477,135 @@ main {
   display: none;
 }
 
+
+/* ===== DOOM PROTOCOL ===== */
+
+.protocol-banner[hidden],
+.latveria-panel[hidden],
+.recover-button[hidden] {
+  display: none;
+}
+
+/* Alerta */
+.protocol-banner:not([hidden]) {
+  margin-bottom: 16px;
+  padding: 18px;
+  border: 1px solid #ff465c;
+  border-radius: 8px;
+  background: #300d19;
+  color: #ff7183;
+  text-align: center;
+  font-weight: 800;
+  letter-spacing: 2px;
+}
+
+/* Intrusión */
+body[data-protocol="alert"] .chat-panel {
+  border-color: #ff465c;
+  animation: doom-glitch 0.2s 5;
+}
+
+/* Modo Doom */
+body[data-protocol="doom"] {
+  --cyan: #30e28e;
+  --border: rgba(48, 226, 142, 0.35);
+  --panel: #11281b;
+}
+
+body[data-protocol="doom"],
+body[data-protocol="recovery"] {
+  background:
+    radial-gradient(circle at 50% 20%, #17492d, #07120d 70%);
+}
+
+body[data-protocol="doom"] .header,
+body[data-protocol="doom"] .chat-panel {
+  border-color: #30e28e;
+}
+
+body[data-protocol="doom"] .logo-symbol,
+body[data-protocol="doom"] .accent,
+body[data-protocol="doom"] .message-author {
+  color: #30e28e;
+}
+
+body[data-protocol="doom"] .ai-message {
+  background: #123321;
+  border-color: #287c4c;
+}
+
+/* Bandera de Latveria (versión provisional) */
+.latveria-panel:not([hidden]) {
+  display: flex;
+  align-items: center;
+  gap: 16px;
+  margin-bottom: 16px;
+  padding: 16px;
+  background: #0d2718;
+  border: 1px solid #30e28e;
+  border-radius: 8px;
+  color: #30e28e;
+}
+
+.latveria-panel p {
+  margin: 5px 0 0;
+  font-size: 11px;
+}
+
+.latveria-flag {
+  display: flex;
+  width: 72px;
+  height: 48px;
+  flex-shrink: 0;
+}
+
+.latveria-flag span {
+  flex: 1;
+}
+
+.latveria-flag span:nth-child(1),
+.latveria-flag span:nth-child(3) {
+  background: #087144;
+}
+
+.latveria-flag span:nth-child(2) {
+  background: #eef3ed;
+}
+
+/* Recuperación */
+.recover-button:not([hidden]) {
+  display: block;
+  margin: 0 15px 15px;
+  width: calc(100% - 30px);
+  padding: 16px;
+  border: 1px solid #00d9ff;
+  border-radius: 7px;
+  background: #0c2638;
+  color: #00d9ff;
+  font-weight: 800;
+  cursor: pointer;
+}
+
+/* Animación glitch */
+@keyframes doom-glitch {
+  0%, 100% {
+    transform: translateX(0);
+  }
+  25% {
+    transform: translateX(-3px);
+  }
+  50% {
+    transform: translateX(4px);
+    filter: hue-rotate(45deg);
+  }
+  75% {
+    transform: translateX(-2px);
+  }
+}
+
+/* Accesibilidad */
+@media (prefers-reduced-motion: reduce) {
+  body[data-protocol="alert"] .chat-panel {
+    animation: none;
+  }
+}

@@ -1,5 +1,7 @@
 import "./styles.css";
 
+import { initDoomProtocol } from "./doomProtocol.js";
+
 import { initChat } from "./chat.js";
 
 // Contenedor principal de la aplicación
@@ -70,10 +72,32 @@ function renderChat() {
         <p>Conectado con la simulación de Tony Stark.</p>
       </div>
 
+
+       
+  <div
+      id="protocol-banner"
+      class="protocol-banner"
+      role="status"
+      hidden
+     ></div>
+
+      <div id="latveria-panel" class="latveria-panel" hidden>
+      <div class="latveria-flag" aria-hidden="true">
+     <span></span>
+     <span></span>
+     <span></span>
+  </div>
+
+  <div>
+    <strong>LATVERIA</strong>
+    <p>DOOM PROTOCOL // SISTEMA COMPROMETIDO</p>
+  </div>
+</div>
+
       <div class="chat-panel">
         <div class="chat-topbar">
           <span class="status-dot"></span>
-          <strong>TONY STARK</strong>
+         <strong id="protocol-status">TONY STARK</strong>
           <span class="online-label">EN LÍNEA</span>
         </div>
 
@@ -102,6 +126,17 @@ function renderChat() {
             ENVIAR →
           </button>
         </form>
+
+        
+           <button
+            id="recover-button"
+            class="recover-button"
+            type="button"
+           hidden
+           >
+            SOLICITAR AYUDA A J.A.R.V.I.S.
+           </button>
+
       </div>
     </section>
   `;
@@ -159,10 +194,10 @@ function render() {
 
   // Si estamos en la vista Chat, inicializamos el chat
   if (path === "/chat") {
-    initChat();
-  }
+  initChat();
+  initDoomProtocol();
 }
-
+}
 
 // Cambia la URL sin recargar el documento
 function navigate(path) {
@@ -196,5 +231,3 @@ window.addEventListener("popstate", render);
 
 // Mostramos la pantalla inicial
 render();
-
-

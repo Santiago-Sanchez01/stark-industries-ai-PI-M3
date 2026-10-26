@@ -1,6 +1,14 @@
 
 import { requestGeminiReply } from "./api.js";
 import { normalizeMessage } from "./utils.js";
+import { detectDoomReference } from "./utils.js";
+
+import {
+  activateDoomProtocol,
+  getProtocolState,
+  PROTOCOL_STATES,
+} from "./doomProtocol.js";
+
 
 // Mensaje inicial de Tony Stark
 const WELCOME_MESSAGE = {
@@ -86,17 +94,22 @@ function renderError() {
 }
 
 // Actualiza el botón de enviar
+
 function updateFormState() {
   const button = document.querySelector(".btn-send");
 
   if (!button) return;
 
-  button.disabled = isTyping;
+  const protocolIsNormal =
+    getProtocolState() === PROTOCOL_STATES.NORMAL;
+
+  button.disabled = isTyping || !protocolIsNormal;
 
   button.textContent = isTyping
     ? "ESPERANDO..."
     : "ENVIAR →";
 }
+
 
 // Maneja el envío de mensajes
 async function handleSubmit(event) {
@@ -140,6 +153,22 @@ async function handleSubmit(event) {
 
   // Limpiamos el formulario
   input.value = "";
+  
+// Detectamos si el usuario mencionó a Doom
+if (
+  getProtocolState() === PROTOCOL_STATES.NORMAL &&
+  detectDoomReference(text)
+) {
+  errorMessage = "";
+
+  renderMessages();
+  renderError();
+
+  activateDoomProtocol();
+  updateFormState();
+
+  return;
+}
 
   // Activamos el estado de carga
   isTyping = true;
@@ -194,3 +223,7 @@ export function initChat() {
   renderError();
   updateFormState();
 }
+
+document.addEventListener("protocolchange", () => {
+  updateFormState();
+});
