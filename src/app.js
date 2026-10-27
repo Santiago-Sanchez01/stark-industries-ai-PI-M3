@@ -71,6 +71,7 @@ function renderChat() {
   return `
     <section class="chat-layout">
 
+      <!-- Cabecera dinámica -->
       <div class="chat-heading">
         <p
           class="eyebrow"
@@ -97,27 +98,97 @@ function renderChat() {
         hidden
       ></div>
 
-      <!-- Panel de Latveria -->
+      <!-- Panel cinematográfico de Latveria -->
       <div
         id="latveria-panel"
-        class="latveria-panel"
+        class="latveria-panel doom-command"
+        aria-label="Panel de control ficticio de Doctor Doom"
         hidden
       >
+
+        <div class="doom-command__identity">
+
+          <div
+            class="doom-command__emblem"
+            aria-hidden="true"
+          >
+            <span class="doom-command__emblem-core">
+              D
+            </span>
+          </div>
+
+          <div class="doom-command__identity-text">
+            <p class="doom-command__eyebrow">
+              LATVERIA // CANAL INTERVENIDO
+            </p>
+
+            <h2>VICTOR VON DOOM</h2>
+
+            <p class="doom-command__subtitle">
+              SOBERANO DE LATVERIA
+            </p>
+          </div>
+
+          <div class="doom-command__flag">
+            <div
+              class="latveria-flag"
+              aria-hidden="true"
+            >
+              <span></span>
+              <span></span>
+              <span></span>
+            </div>
+
+            <span>LATVERIA</span>
+          </div>
+
+        </div>
+
         <div
-          class="latveria-flag"
+          class="doom-command__separator"
           aria-hidden="true"
         >
           <span></span>
-          <span></span>
-          <span></span>
         </div>
 
-        <div>
-          <strong>LATVERIA</strong>
-          <p>
-            DOOM PROTOCOL // SISTEMA COMPROMETIDO
-          </p>
+        <!-- Indicadores de sistema ficticios -->
+        <div class="doom-command__systems">
+
+          <div class="doom-command__system">
+            <span>STARK NETWORK</span>
+
+            <strong class="doom-command__danger">
+              COMPROMETIDO
+            </strong>
+          </div>
+
+          <div class="doom-command__system">
+            <span>J.A.R.V.I.S.</span>
+
+            <strong class="doom-command__danger">
+              SEÑAL INTERRUMPIDA
+            </strong>
+          </div>
+
+          <div class="doom-command__system">
+            <span>CONTROL DEL SISTEMA</span>
+
+            <strong class="doom-command__success">
+              DOCTOR DOOM
+            </strong>
+          </div>
+
         </div>
+
+        <p class="doom-command__footer">
+          <span
+            class="doom-command__pulse"
+            aria-hidden="true"
+          ></span>
+
+          TRANSMISIÓN DE LATVERIA ESTABLECIDA
+        </p>
+
       </div>
 
       <!-- Panel de conversación -->
@@ -141,7 +212,7 @@ function renderChat() {
           </span>
         </div>
 
-        <!-- Historial -->
+        <!-- Historial de conversación -->
         <div
           class="messages"
           id="messages"
@@ -149,7 +220,7 @@ function renderChat() {
           aria-label="Historial de conversación"
         ></div>
 
-        <!-- Errores -->
+        <!-- Mensajes de error -->
         <div
           id="chat-error"
           class="chat-error"
@@ -157,7 +228,7 @@ function renderChat() {
           hidden
         ></div>
 
-        <!-- Formulario -->
+        <!-- Formulario del chat -->
         <form
           class="chat-form"
           id="chat-form"
@@ -179,7 +250,7 @@ function renderChat() {
           </button>
         </form>
 
-        <!-- Recuperación J.A.R.V.I.S. -->
+        <!-- Recuperación de J.A.R.V.I.S. -->
         <button
           id="recover-button"
           class="recover-button"
@@ -238,7 +309,7 @@ function renderAbout() {
   `;
 }
 
-// Renderizado de la ruta actual
+// Renderiza la vista correspondiente a la URL
 function render() {
   const path = window.location.pathname;
   const view = routes[path] || renderHome;
@@ -255,7 +326,7 @@ function render() {
     </footer>
   `;
 
-  // Inicialización exclusiva de Chat
+  // Inicialización de la vista Chat
   if (path === "/chat") {
     initChat();
     initDoomProtocol();
@@ -268,13 +339,13 @@ function navigate(path) {
   render();
 }
 
-// Interceptar enlaces internos
+// Interceptamos únicamente enlaces internos
 document.addEventListener("click", (event) => {
   const link = event.target.closest("a[data-link]");
 
   if (!link) return;
 
-  // Respetar apertura en nueva pestaña
+  // Permitimos abrir enlaces en nuevas pestañas
   if (
     event.button !== 0 ||
     event.ctrlKey ||
@@ -290,7 +361,7 @@ document.addEventListener("click", (event) => {
   navigate(link.getAttribute("href"));
 });
 
-// Botones Atrás y Adelante
+// Botones Atrás y Adelante del navegador
 window.addEventListener("popstate", render);
 
 // Renderizado inicial
