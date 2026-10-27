@@ -416,3 +416,40 @@ Los personajes Tony Stark, Iron Man, Doctor Doom y J.A.R.V.I.S., así como sus r
 Este es un proyecto educativo no oficial, sin afiliación ni respaldo de Marvel o Disney.
 
 Las respuestas de los personajes son generadas mediante inteligencia artificial y forman parte de una experiencia ficticia.
+## Rediseño cinematográfico local
+
+La vista Chat utiliza un panel de personaje y un chat con scroll interno. Desde 1100 px se distribuyen en dos columnas (aproximadamente 62/38); celulares y tablets apilan el contenido. Las pantallas bajas permiten scroll de página. Se conservan NORMAL, ALERT, DOOM y RECOVERY, los historiales y la integración serverless existente. Los efectos respetan `prefers-reduced-motion`.
+
+### Recursos visuales y atribución
+
+- `public/assets/latveria-flag.svg`: **Flag of Latveria**, autor **Michos (usuario Michoss)**, 25 de agosto de 2014. Fuente: https://commons.wikimedia.org/wiki/File:Flag_of_Latveria.svg . SVG original descargado sin modificaciones. Licencia elegida: **Creative Commons Attribution-ShareAlike 3.0 Unported**, https://creativecommons.org/licenses/by-sa/3.0/ . Se conserva su proporción 2:1. Las adaptaciones de este recurso deben compartirse bajo la misma licencia o una compatible; no implica respaldo del autor.
+- `public/assets/doom-portrait.svg`: ilustración vectorial original creada para este rediseño mediante código SVG; no deriva de una imagen descargada. No se atribuye una licencia de terceros a esta ilustración. El personaje Doctor Doom pertenece a sus respectivos titulares.
+- Reactor Arc, HUD, fondos y superficies: composición original en HTML/CSS, sin imágenes externas, fuentes remotas ni hotlinking.
+
+Stark Industries AI es un proyecto educativo no oficial, sin afiliación ni respaldo de Marvel o Disney. Los personajes pertenecen a sus titulares. DOOM PROTOCOL es una simulación narrativa ficticia y no representa un incidente de seguridad real.
+
+### Revisión visual pendiente
+
+No se recibió el boceto adjunto en la sesión. Revisar manualmente `/home`, `/chat` y `/about` en 375, 393, 768, 1024, 1366, 1440 y 1920 px, incluyendo alturas 768 y 900 px. Comprobar mensajes largos, loading, errores y recuperación con el teclado y zoom. El diseño no requiere nuevas dependencias ni modificaciones de credenciales.
+
+
+### Versión final Iron Man / Doom
+
+- Cabecera unificada, reactor SVG con placas rojas/doradas, retrato cinematográfico asimétrico, contexto cartográfico decorativo y recuperación cian. El mapa es un gráfico ficticio decorativo, no cartografía oficial de Marvel.
+- `src/messageView.js` construye mensajes con `data-speaker="tony|doom|user|system"`. Sus colores son constantes por autor, sin variables del protocolo. El indicador de escritura también identifica su personaje. Se conservan los formatos enviados a Gemini.
+- `public/assets/doom-cinematic.jpg`: ilustración original generada con la herramienta integrada imagegen, sin descargar ilustraciones de terceros. Prompt utilizado: “Use case: stylized-concept. Create an original cinematic digital painting asset for an educational Doctor Doom web interface, NOT a UI screenshot. Wide landscape composition 3:2. Victor Von Doom fills the LEFT half, imposing chest-up three-quarter view, dark emerald hood, finely detailed sculpted gunmetal mask, dramatic emerald rim light, richly textured green fabric, engraved armor and subtle gold cloak clasps. His face is near x=28%, y=32%. RIGHT half shows a distant gothic Latverian fortress and mountains under green storm clouds, lower contrast and dark enough for HTML overlay. Premium realistic concept art, depth, atmospheric fog, intricate materials, restrained green glow. No words, no lettering, no flags, no logos, no watermark, no frames or interface controls. This is a background illustration only; the actual app supplies accessible HTML content.” Generación 1536 × 1024; JPEG optimizado de aproximadamente 409 KiB. No se presenta como recurso CC ni se concede una licencia sobre el personaje; continúan aplicando los derechos de sus titulares. El PNG maestro está en `docs/design-assets/doom-cinematic-source.png`, fuera de los recursos públicos.
+- `public/assets/arc-reactor.svg` y `public/assets/iron-avatar.svg`: gráficos originales creados mediante código SVG para este proyecto. Sin licencia de terceros incorporada. Las referencias a Iron Man pertenecen a sus titulares.
+- La bandera auténtica y su atribución CC BY-SA 3.0 permanecen intactas. El antiguo `doom-portrait.svg` se conserva como recurso previo, pero ya no se muestra.
+- Se sustituyó la capa anterior de ajuste de altura de `styles.css`; el diseño del chat ahora se concentra en `cinematic.css`. Dos columnas desde 1100 px; tabletas con contenido apilado.
+- Validación: build exitoso y 17 tests aprobados (11 anteriores + 6 casos sobre autoría y persistencia). Sin solicitudes reales a Gemini.
+- El boceto final Stark/Doom fue recibido y utilizado. Se inspeccionó la ilustración generada, pero no se dispone de navegador automatizable. Pendiente: renderizado a 375/393/768/1024/1366/1440/1920 px, navegación Atrás/Adelante, zoom, teclado virtual, loading/error y controles. La revisión de código y los tests no sustituyen esa comprobación visual.
+
+### Pulido final de presentación — 27/10/2026
+
+Se conserva la composición y todos los recursos gráficos. Home reutiliza `arc-reactor.svg`, con iluminación y patrones HUD discretos; About conserva su contenido con tarjetas responsive. La telemetría mejora contraste y jerarquía, identifica su naturaleza ficticia y el mapa decorativo se simplifica en ventanas bajas. Los textos informativos de la capa cinematográfica tienen un mínimo de 12 px. El formulario y la recuperación siguen fuera del historial desplazable.
+
+Los avisos visibles incorporan `noticeType` (`intrusion` o `recovery`) y el renderer lo conserva como `data-notice-type`. Intrusión usa rojo; recuperación usa azul/cian. Estos metadatos son exclusivamente de presentación y no se envían a Gemini. Los mensajes siguen identificándose por `data-speaker`; no dependen del tema activo. Se retiraron colores antiguos genéricos de avisos y el estilo obsoleto del reactor textual. El enlace activo de navegación incluye `aria-current="page"`.
+
+Verificación: 20 tests aprobados (17 anteriores y 3 nuevos casos de tipos de aviso), build exitoso, sintaxis comprobada, IDs y rutas de recursos verificados estáticamente. Sin llamadas reales a Gemini ni cambios de backend o credenciales. No se incorporaron nuevos recursos ni licencias.
+
+Pendiente en navegador (no disponible en esta sesión): capturas y desbordamientos a 375 × 667, 393 × 852, 768 × 1024, 1024 × 768, 1366 × 768, 1440 × 900 y 1920 × 1080; encuadre del rostro; lectura con zoom; navegación SPA y Atrás/Adelante; estados de carga/error; scroll y acceso al formulario y recuperación con teclado virtual. Los tests de estados y la revisión estática no sustituyen esta validación visual.

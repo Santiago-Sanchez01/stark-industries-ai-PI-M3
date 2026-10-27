@@ -1,3 +1,4 @@
+import { createMessageElement } from "./messageView.js";
 
 import { requestGeminiReply } from "./api.js";
 
@@ -39,48 +40,6 @@ function getActiveCharacter() {
     : "tony";
 }
 
-// Construye visualmente un mensaje
-function createMessageElement(message) {
-  const element = document.createElement("div");
-
-  if (message.role === "notice") {
-    element.className = "protocol-notice";
-    element.textContent = message.text;
-    return element;
-  }
-
-  element.className = "message";
-
-  element.classList.add(
-    message.role === "user"
-      ? "user-message"
-      : "ai-message"
-  );
-
-  const author = document.createElement("span");
-  author.className = "message-author";
-
-  if (message.role === "user") {
-    author.textContent = "VOS";
-  } else {
-    author.textContent =
-      message.character === "doom"
-        ? "DOCTOR DOOM"
-        : "TONY STARK";
-  }
-
-  const content = document.createElement("p");
-  content.textContent = message.text;
-
-  element.append(author, content);
-
-  if (message.character === "doom") {
-    element.classList.add("doom-message");
-  }
-
-  return element;
-}
-
 // Dibuja los mensajes en pantalla
 function renderMessages() {
   const container = document.querySelector("#messages");
@@ -98,6 +57,7 @@ function renderMessages() {
   if (isTyping) {
     const indicator = document.createElement("div");
     indicator.className = "message ai-message typing";
+    indicator.dataset.speaker = getActiveCharacter();
 
     indicator.textContent =
       getActiveCharacter() === "doom"
@@ -284,6 +244,7 @@ document.addEventListener("protocolchange", (event) => {
   if (state === PROTOCOL_STATES.ALERT) {
     displayMessages.push({
       role: "notice",
+      noticeType: "intrusion",
       text: "⚠ J.A.R.V.I.S.: Intrusión detectada. Perdiendo el control del sistema...",
     });
   }
@@ -296,6 +257,7 @@ document.addEventListener("protocolchange", (event) => {
 
     displayMessages.push({
       role: "notice",
+      noticeType: "intrusion",
       text: "DOOM PROTOCOL ACTIVE // LATVERIA HA TOMADO EL CONTROL",
     });
 
@@ -306,6 +268,7 @@ document.addEventListener("protocolchange", (event) => {
   if (state === PROTOCOL_STATES.RECOVERY) {
     displayMessages.push({
       role: "notice",
+      noticeType: "recovery",
       text: "J.A.R.V.I.S.: Protocolo de recuperación iniciado. Restaurando Stark Industries...",
     });
   }
@@ -316,6 +279,7 @@ document.addEventListener("protocolchange", (event) => {
   ) {
     displayMessages.push({
       role: "notice",
+      noticeType: "recovery",
       text: "✓ J.A.R.V.I.S.: Sistemas restaurados. Tony Stark vuelve a estar disponible.",
     });
   }

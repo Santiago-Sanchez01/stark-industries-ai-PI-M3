@@ -191,18 +191,6 @@ main {
   animation: reactor-glow 3s infinite alternate;
 }
 
-.reactor-core {
-  display: grid;
-  place-items: center;
-  width: 115px;
-  height: 115px;
-  border: 8px double var(--cyan);
-  border-radius: 50%;
-  color: #b8f8ff;
-  font-size: 55px;
-  text-shadow: 0 0 22px var(--cyan);
-}
-
 @keyframes reactor-glow {
   from { box-shadow: 0 0 12px #00d9ff50; }
   to { box-shadow: 0 0 45px #00d9ff99; }
@@ -524,15 +512,10 @@ body[data-protocol="doom"] .chat-panel {
 }
 
 body[data-protocol="doom"] .logo-symbol,
-body[data-protocol="doom"] .accent,
-body[data-protocol="doom"] .message-author {
+body[data-protocol="doom"] .accent {
   color: #30e28e;
 }
 
-body[data-protocol="doom"] .ai-message {
-  background: #123321;
-  border-color: #287c4c;
-}
 
 /* Bandera de Latveria (versión provisional) */
 .latveria-panel:not([hidden]) {
@@ -557,19 +540,6 @@ body[data-protocol="doom"] .ai-message {
   width: 72px;
   height: 48px;
   flex-shrink: 0;
-}
-
-.latveria-flag span {
-  flex: 1;
-}
-
-.latveria-flag span:nth-child(1),
-.latveria-flag span:nth-child(3) {
-  background: #087144;
-}
-
-.latveria-flag span:nth-child(2) {
-  background: #eef3ed;
 }
 
 /* Recuperación */
@@ -627,15 +597,9 @@ body[data-protocol="doom"] .ai-message {
 .protocol-notice {
   align-self: center;
   width: min(100%, 550px);
-  padding: 12px 16px;
-  border: 1px solid rgba(255, 82, 100, 0.4);
   border-radius: 6px;
-  background: rgba(105, 20, 35, 0.25);
-  color: #ff9baa;
   text-align: center;
-  font-size: 12px;
   font-weight: 600;
-  line-height: 1.6;
   letter-spacing: 0.5px;
 }
 
@@ -665,3 +629,677 @@ body[data-protocol="recovery"] .chat-panel {
   border-color: #00d9ff;
   box-shadow: 0 0 25px rgba(0, 217, 255, 0.15);
 }
+
+
+
+/* ==========================================
+   STARK INDUSTRIES AI — FINAL UI POLISH
+   ========================================== */
+
+/* Transición suave entre identidades */
+body {
+  transition:
+    background-color 0.4s ease,
+    color 0.4s ease;
+}
+
+/* Panel principal del chat */
+.chat-panel {
+  border-radius: 16px;
+  background: rgba(9, 21, 35, 0.96);
+  box-shadow:
+    0 18px 55px rgba(0, 0, 0, 0.3),
+    inset 0 1px 0 rgba(255, 255, 255, 0.03);
+}
+
+/* Encabezado del chat */
+.chat-topbar {
+  min-height: 65px;
+  padding: 16px 20px;
+  background: rgba(11, 29, 46, 0.95);
+}
+
+.chat-topbar strong {
+  font-size: 13px;
+  letter-spacing: 1.5px;
+}
+
+/* Área de conversación */
+.messages {
+  min-height: 0;
+  padding: 22px 16px;
+  gap: 18px;
+  scroll-behavior: smooth;
+  scrollbar-width: thin;
+  scrollbar-color: var(--border) transparent;
+}
+
+/* Scrollbar para Chrome y Edge */
+.messages::-webkit-scrollbar {
+  width: 6px;
+}
+
+.messages::-webkit-scrollbar-track {
+  background: transparent;
+}
+
+.messages::-webkit-scrollbar-thumb {
+  background: rgba(0, 217, 255, 0.25);
+  border-radius: 10px;
+}
+
+.messages::-webkit-scrollbar-thumb:hover {
+  background: rgba(0, 217, 255, 0.5);
+}
+
+/* Burbujas de mensajes */
+.message {
+  max-width: min(85%, 520px);
+  min-width: 0;
+  padding: 16px 18px;
+  overflow-wrap: anywhere;
+  border-radius: 14px;
+  line-height: 1.65;
+}
+
+.message p {
+  margin: 8px 0 0;
+  white-space: pre-wrap;
+  font-size: 14px;
+}
+
+.message-author {
+  display: block;
+  font-size: 10px;
+  letter-spacing: 1.5px;
+}
+
+/* Mensajes de Tony */
+.ai-message:not(.doom-message) {
+  background: #122a3e;
+  border: 1px solid rgba(0, 217, 255, 0.22);
+  border-bottom-left-radius: 4px;
+}
+
+/* Mensajes del usuario */
+.user-message {
+  background: linear-gradient(
+    135deg,
+    #075c78,
+    #087b9c
+  );
+
+  border: 1px solid rgba(90, 225, 255, 0.35);
+  border-bottom-right-radius: 4px;
+}
+
+/* Mensajes de Doom */
+.doom-message {
+  background: linear-gradient(
+    135deg,
+    #102b1c,
+    #173c28
+  );
+
+  border: 1px solid rgba(56, 233, 145, 0.4);
+  border-bottom-left-radius: 4px;
+}
+
+.doom-message .message-author {
+  color: #38e991;
+}
+
+/* Formulario */
+.chat-form {
+  align-items: stretch;
+  padding: 16px;
+  background: rgba(7, 18, 30, 0.95);
+}
+
+.chat-form input {
+  min-height: 48px;
+  border-radius: 9px;
+  padding: 12px 15px;
+  transition:
+    border-color 0.2s ease,
+    box-shadow 0.2s ease;
+}
+
+.chat-form input:focus {
+  border-color: var(--cyan);
+  outline: none;
+  box-shadow: 0 0 0 3px rgba(0, 217, 255, 0.12);
+}
+
+.btn-send {
+  min-height: 48px;
+  border-radius: 9px;
+}
+
+/* DOOM MODE */
+body[data-protocol="doom"] .chat-panel {
+  background: rgba(7, 21, 13, 0.97);
+  box-shadow:
+    0 18px 55px rgba(0, 0, 0, 0.4),
+    0 0 28px rgba(48, 226, 142, 0.1);
+}
+
+body[data-protocol="doom"] .chat-topbar,
+body[data-protocol="doom"] .chat-form {
+  background: rgba(9, 32, 19, 0.95);
+}
+
+body[data-protocol="doom"]
+.messages::-webkit-scrollbar-thumb {
+  background: rgba(48, 226, 142, 0.4);
+}
+
+body[data-protocol="doom"] .messages {
+  scrollbar-color:
+    rgba(48, 226, 142, 0.4) transparent;
+}
+
+/* Mobile */
+@media (max-width: 767px) {
+  .chat-layout {
+    padding: 18px 10px;
+  }
+
+  .chat-heading {
+    margin-bottom: 18px;
+  }
+
+  .chat-heading h1 {
+    font-size: 24px;
+  }
+
+  .chat-panel {
+    height: 65dvh;
+    min-height: 350px;
+    max-height: none;
+    border-radius: 12px;
+  }
+
+  .messages {
+    padding: 16px 12px;
+    gap: 14px;
+  }
+
+  .message {
+    max-width: 92%;
+    padding: 13px 14px;
+  }
+
+  .message p {
+    font-size: 13px;
+  }
+
+  .chat-form {
+    padding: 10px;
+    gap: 8px;
+  }
+
+  .chat-form input {
+    min-width: 0;
+    padding: 10px;
+    font-size: 16px;
+  }
+
+  .btn-send {
+    padding: 10px 12px;
+    font-size: 11px;
+  }
+
+  .protocol-notice {
+    font-size: 11px;
+    padding: 12px;
+  }
+}
+
+/* Preferencias de accesibilidad */
+@media (prefers-reduced-motion: reduce) {
+  body,
+  .messages,
+  .chat-form input {
+    transition: none;
+    scroll-behavior: auto;
+  }
+}
+
+
+/* ==========================================
+   IDENTIDAD DINÁMICA — STARK / DOOM
+   ========================================== */
+
+/* Evita mostrar elementos ocultos por HTML */
+#protocol-banner[hidden],
+#latveria-panel[hidden],
+#recover-button[hidden] {
+  display: none !important;
+}
+
+/* Cambios suaves de cabecera */
+.chat-heading h1,
+.chat-heading .eyebrow,
+#chat-description,
+#protocol-status,
+#chat-online-label {
+  transition:
+    color 0.35s ease,
+    text-shadow 0.35s ease;
+}
+
+/* Indicador de estado */
+#chat-online-label {
+  margin-left: auto;
+  font-weight: 700;
+  letter-spacing: 0.1em;
+}
+
+/* Intrusión detectada */
+body[data-protocol="alert"] #chat-title,
+body[data-protocol="alert"] #chat-eyebrow,
+body[data-protocol="alert"] #chat-online-label {
+  color: #ff5467;
+  text-shadow: 0 0 14px rgba(255, 60, 80, 0.35);
+}
+
+/* Doctor Doom toma el control */
+body[data-protocol="doom"] #chat-title {
+  color: #65ffab;
+  text-shadow:
+    0 0 12px rgba(49, 255, 135, 0.35),
+    0 0 32px rgba(49, 255, 135, 0.15);
+}
+
+body[data-protocol="doom"] #chat-eyebrow,
+body[data-protocol="doom"] #protocol-status,
+body[data-protocol="doom"] #chat-online-label {
+  color: #65ffab;
+}
+
+body[data-protocol="doom"] #chat-description {
+  color: #c2ead1;
+}
+
+/* Recuperación de J.A.R.V.I.S. */
+body[data-protocol="recovery"] #chat-title {
+  color: #4adfff;
+  text-shadow: 0 0 18px rgba(74, 223, 255, 0.35);
+}
+
+body[data-protocol="recovery"] #chat-online-label {
+  color: #4adfff;
+}
+
+/* Controles bloqueados durante transiciones */
+#message-input:disabled,
+#chat-send-button:disabled {
+  opacity: 0.55;
+  cursor: not-allowed;
+}
+
+/* Accesibilidad */
+@media (prefers-reduced-motion: reduce) {
+  .chat-heading h1,
+  .chat-heading .eyebrow,
+  #chat-description,
+  #protocol-status,
+  #chat-online-label {
+    transition: none;
+  }
+}
+
+
+
+/* ==========================================
+   DOOM PROTOCOL — COMMAND PANEL
+   ========================================== */
+
+/* Contenedor principal de Latveria */
+#latveria-panel.doom-command {
+  display: block;
+  position: relative;
+  width: 100%;
+  box-sizing: border-box;
+  overflow: hidden;
+  padding: 0;
+  border: 1px solid rgba(44, 255, 142, 0.55);
+  border-radius: 14px;
+  background:
+    radial-gradient(
+      circle at 12% 0%,
+      rgba(43, 217, 105, 0.18),
+      transparent 45%
+    ),
+    linear-gradient(
+      135deg,
+      #0c2418 0%,
+      #07160f 60%,
+      #04100b 100%
+    );
+  box-shadow:
+    0 0 28px rgba(0, 255, 128, 0.07),
+    inset 0 1px 0 rgba(255, 255, 255, 0.05);
+  color: #ecfff2;
+  isolation: isolate;
+  animation: doom-panel-entry 0.65s ease-out both;
+}
+
+/* Respeta siempre el atributo hidden */
+#latveria-panel.doom-command[hidden] {
+  display: none !important;
+}
+
+/* Líneas holográficas */
+.doom-command::before {
+  content: "";
+  position: absolute;
+  inset: 0;
+  pointer-events: none;
+  z-index: -1;
+  opacity: 0.22;
+  background-image: repeating-linear-gradient(
+    0deg,
+    transparent 0,
+    transparent 4px,
+    rgba(93, 255, 156, 0.09) 5px,
+    transparent 6px
+  );
+}
+
+/* Franja superior */
+.doom-command::after {
+  content: "";
+  position: absolute;
+  top: 0;
+  left: 12%;
+  right: 12%;
+  height: 2px;
+  background: linear-gradient(
+    90deg,
+    transparent,
+    #4bff9e,
+    transparent
+  );
+  box-shadow: 0 0 16px rgba(75, 255, 158, 0.5);
+}
+
+/* Identidad de Doom */
+.doom-command__identity {
+  display: flex;
+  align-items: center;
+  gap: 20px;
+  padding: 22px 24px 18px;
+}
+
+/* Emblema metálico */
+.doom-command__emblem {
+  flex: 0 0 82px;
+  width: 82px;
+  height: 90px;
+  display: grid;
+  place-items: center;
+  position: relative;
+  clip-path: polygon(
+    50% 0%,
+    88% 15%,
+    95% 65%,
+    50% 100%,
+    5% 65%,
+    12% 15%
+  );
+  background: linear-gradient(
+    145deg,
+    #a0bbae 0%,
+    #1a5235 28%,
+    #07140d 65%,
+    #47f493 100%
+  );
+  filter: drop-shadow(0 0 9px rgba(49, 255, 133, 0.3));
+}
+
+.doom-command__emblem-core {
+  width: 66px;
+  height: 74px;
+  display: grid;
+  place-items: center;
+  clip-path: inherit;
+  background: linear-gradient(135deg, #12331f, #030b07);
+  color: #aaffcb;
+  font-size: 38px;
+  font-weight: 900;
+  font-family: Georgia, serif;
+  text-shadow: 0 0 14px rgba(70, 255, 153, 0.5);
+}
+
+.doom-command__identity-text {
+  flex: 1;
+  min-width: 0;
+}
+
+.doom-command__eyebrow {
+  margin: 0 0 9px;
+  font-size: 10px;
+  font-weight: 700;
+  letter-spacing: 0.19em;
+  color: #67ffad;
+}
+
+.doom-command__identity-text h2 {
+  margin: 0;
+  font-size: clamp(20px, 3vw, 29px);
+  line-height: 1.2;
+  letter-spacing: 0.08em;
+  color: #f0fff5;
+  text-shadow: 0 0 18px rgba(59, 255, 133, 0.2);
+}
+
+.doom-command__subtitle {
+  margin: 9px 0 0;
+  font-size: 10px;
+  letter-spacing: 0.16em;
+  color: #a3cdb2;
+}
+
+/* Bandera */
+.doom-command__flag {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 7px;
+  flex-shrink: 0;
+}
+
+.doom-command__flag .latveria-flag {
+  flex-shrink: 0;
+}
+
+.doom-command__flag > span {
+  font-size: 9px;
+  letter-spacing: 0.13em;
+  color: #8bf6b4;
+}
+
+/* Línea divisoria */
+.doom-command__separator {
+  height: 1px;
+  margin: 0 24px;
+  background: linear-gradient(
+    90deg,
+    transparent,
+    rgba(73, 255, 142, 0.5),
+    transparent
+  );
+}
+
+/* Estado de los sistemas */
+.doom-command__systems {
+  display: grid;
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+  gap: 12px;
+  padding: 18px 24px;
+}
+
+.doom-command__system {
+  display: flex;
+  flex-direction: column;
+  gap: 9px;
+  padding: 12px;
+  min-width: 0;
+  border: 1px solid rgba(73, 255, 142, 0.16);
+  border-radius: 8px;
+  background: rgba(1, 9, 5, 0.45);
+}
+
+.doom-command__system > span {
+  color: #a5c9b0;
+  font-size: 10px;
+  letter-spacing: 0.08em;
+}
+
+.doom-command__system strong {
+  font-size: 11px;
+  letter-spacing: 0.04em;
+  overflow-wrap: anywhere;
+}
+
+.doom-command__danger {
+  color: #ff6375;
+}
+
+.doom-command__success {
+  color: #54ff9a;
+}
+
+/* Pie del panel */
+.doom-command__footer {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 9px;
+  margin: 0;
+  padding: 12px 16px;
+  border-top: 1px solid rgba(73, 255, 142, 0.15);
+  background: rgba(4, 25, 12, 0.55);
+  color: #70f9a5;
+  font-size: 10px;
+  font-weight: 700;
+  letter-spacing: 0.12em;
+  text-align: center;
+}
+
+.doom-command__pulse {
+  width: 7px;
+  height: 7px;
+  flex-shrink: 0;
+  border-radius: 50%;
+  background: #46ff95;
+  box-shadow: 0 0 12px #46ff95;
+  animation: doom-pulse 1.8s infinite;
+}
+
+@keyframes doom-pulse {
+  50% {
+    opacity: 0.35;
+    box-shadow: 0 0 3px #46ff95;
+  }
+}
+
+@keyframes doom-panel-entry {
+  from {
+    opacity: 0;
+    transform: translateY(12px);
+  }
+
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+/* Tablet */
+@media (max-width: 767px) {
+  .doom-command__identity {
+    gap: 12px;
+    padding: 17px 14px;
+  }
+
+  .doom-command__emblem {
+    flex-basis: 56px;
+    width: 56px;
+    height: 64px;
+  }
+
+  .doom-command__emblem-core {
+    width: 46px;
+    height: 54px;
+    font-size: 27px;
+  }
+
+  .doom-command__identity-text h2 {
+    font-size: 18px;
+    letter-spacing: 0.04em;
+  }
+
+  .doom-command__eyebrow,
+  .doom-command__subtitle {
+    font-size: 8px;
+    letter-spacing: 0.07em;
+  }
+
+  .doom-command__systems {
+    grid-template-columns: 1fr;
+    gap: 7px;
+    padding: 10px 14px;
+  }
+
+  .doom-command__system {
+    flex-direction: row;
+    align-items: center;
+    justify-content: space-between;
+    gap: 8px;
+    padding: 8px 10px;
+  }
+
+  .doom-command__system > span,
+  .doom-command__system strong {
+    font-size: 9px;
+  }
+
+  .doom-command__separator {
+    margin: 0 14px;
+  }
+
+  .doom-command__footer {
+    font-size: 8px;
+    padding: 10px 8px;
+    letter-spacing: 0.05em;
+  }
+
+  .doom-command__flag .latveria-flag {
+    transform: scale(0.8);
+  }
+}
+
+/* Celulares pequeños */
+@media (max-width: 380px) {
+  .doom-command__emblem {
+    display: none;
+  }
+
+  .doom-command__identity-text h2 {
+    font-size: 16px;
+  }
+}
+
+/* Respeto por movimiento reducido */
+@media (prefers-reduced-motion: reduce) {
+  #latveria-panel.doom-command,
+  .doom-command__pulse {
+    animation: none;
+  }
+}
+
+
+/* Chat viewport sizing lives in cinematic.css. */

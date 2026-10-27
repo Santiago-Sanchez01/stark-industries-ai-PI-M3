@@ -1,5 +1,6 @@
 
 import "./styles.css";
+import "./cinematic.css";
 
 import { initDoomProtocol } from "./doomProtocol.js";
 import { initChat } from "./chat.js";
@@ -37,7 +38,7 @@ function renderHome() {
   return `
     <section class="hero">
       <div class="reactor" aria-hidden="true">
-        <div class="reactor-core">◈</div>
+        <img src="/assets/arc-reactor.svg" width="600" height="600" alt="" />
       </div>
 
       <p class="eyebrow">
@@ -71,6 +72,7 @@ function renderChat() {
   return `
     <section class="chat-layout">
 
+      <div class="cinematic-heading">
       <!-- Cabecera dinámica -->
       <div class="chat-heading">
         <p
@@ -97,7 +99,16 @@ function renderChat() {
         aria-live="polite"
         hidden
       ></div>
+      </div>
 
+      <div class="character-stage">
+        <div class="stark-stage">
+          <p class="stage-code">STARK INDUSTRIES / NEURAL INTERFACE 01</p>
+          <div class="arc-display" aria-hidden="true"><img src="/assets/arc-reactor.svg" width="600" height="600" alt="" /><div class="arc-orbit"></div><span class="arc-caption">PALLADIUM CORE / ONLINE</span></div>
+          <div class="stage-identity"><p class="eyebrow">GENIO. INVENTOR. VISIONARIO.</p><h2>TONY STARK</h2><p>EL INGENIO DETRÁS DE LA ARMADURA</p></div>
+          <div class="telemetry"><div><span>J.A.R.V.I.S.</span><strong>EN LÍNEA</strong></div><div><span>ARC REACTOR</span><strong>100 %</strong></div><div><span>STARK NETWORK</span><strong>ESTABLE</strong></div></div>
+          <p class="stage-footnote">MALIBU, CA // SIMULACIÓN EDUCATIVA</p>
+        </div>
       <!-- Panel cinematográfico de Latveria -->
       <div
         id="latveria-panel"
@@ -130,20 +141,19 @@ function renderChat() {
           </div>
 
           <div class="doom-command__flag">
-            <div
-              class="latveria-flag"
-              aria-hidden="true"
-            >
-              <span></span>
-              <span></span>
-              <span></span>
-            </div>
+            <img class="latveria-flag" src="/assets/latveria-flag.svg" width="120" height="60" alt="Bandera de Latveria, con cruz amarilla y roja y águila bicéfala sobre verde" />
 
             <span>LATVERIA</span>
           </div>
 
         </div>
 
+        <img class="doom-portrait" src="/assets/doom-cinematic.jpg" alt="Ilustración generada de Doctor Doom con máscara metálica, capucha esmeralda y fortaleza de Latveria" width="1536" height="1024" />
+        <div class="latveria-context" aria-label="Contexto ficticio de Latveria">
+          <span class="doom-sigil" aria-hidden="true">D</span>
+          <p>LATVERIA</p><span>FORTALEZA DE DOOM</span>
+          <div class="latveria-map" aria-hidden="true"><svg viewBox="0 0 240 120"><path d="m20 60 28-28 24 7 20-22 25 15 38-10 10 25 35 9 18 25-36 12-13 20-30-14-28 7-18-26-33 5Z"/><circle cx="125" cy="64" r="5"/></svg></div>
+        </div>
         <div
           class="doom-command__separator"
           aria-hidden="true"
@@ -152,7 +162,7 @@ function renderChat() {
         </div>
 
         <!-- Indicadores de sistema ficticios -->
-        <div class="doom-command__systems">
+        <div class="doom-command__systems" aria-label="Indicadores ficticios de la simulación">
 
           <div class="doom-command__system">
             <span>STARK NETWORK</span>
@@ -186,11 +196,12 @@ function renderChat() {
             aria-hidden="true"
           ></span>
 
-          TRANSMISIÓN DE LATVERIA ESTABLECIDA
+          LATVERIA // TELEMETRÍA FICTICIA
         </p>
 
       </div>
 
+      </div>
       <!-- Panel de conversación -->
       <div class="chat-panel">
 
@@ -218,6 +229,8 @@ function renderChat() {
           id="messages"
           aria-live="polite"
           aria-label="Historial de conversación"
+          role="log"
+          tabindex="0"
         ></div>
 
         <!-- Mensajes de error -->
@@ -322,9 +335,15 @@ function render() {
     </main>
 
     <footer class="footer">
-      STARK INDUSTRIES AI // PROYECTO INTEGRADOR M3
+      STARK INDUSTRIES AI // EDUCATIVO NO OFICIAL · SIN AFILIACIÓN CON MARVEL
     </footer>
   `;
+
+  document.querySelectorAll(".nav a[data-link]").forEach((link) => {
+    if (link.getAttribute("href") === (routes[path] ? path : "/home")) {
+      link.setAttribute("aria-current", "page");
+    }
+  });
 
   // Inicialización de la vista Chat
   if (path === "/chat") {
