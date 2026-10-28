@@ -141,18 +141,20 @@ function renderChat() {
           </div>
 
           <div class="doom-command__flag">
-            <img class="latveria-flag" src="/assets/latveria-flag.svg" width="120" height="60" alt="Bandera de Latveria, con cruz amarilla y roja y águila bicéfala sobre verde" />
+            <img class="latveria-flag" src="/assets/latveria-flag.svg" width="120" height="60" alt="Bandera de Latveria de los cómics, con cruz y emblema central sobre fondo verde" />
 
             <span>LATVERIA</span>
           </div>
 
         </div>
 
+        <div class="doom-command__visual">
         <img class="doom-portrait" src="/assets/doom-cinematic.jpg" alt="Ilustración generada de Doctor Doom con máscara metálica, capucha esmeralda y fortaleza de Latveria" width="1536" height="1024" />
         <div class="latveria-context" aria-label="Contexto ficticio de Latveria">
           <span class="doom-sigil" aria-hidden="true">D</span>
           <p>LATVERIA</p><span>FORTALEZA DE DOOM</span>
           <div class="latveria-map" aria-hidden="true"><svg viewBox="0 0 240 120"><path d="m20 60 28-28 24 7 20-22 25 15 38-10 10 25 35 9 18 25-36 12-13 20-30-14-28 7-18-26-33 5Z"/><circle cx="125" cy="64" r="5"/></svg></div>
+        </div>
         </div>
         <div
           class="doom-command__separator"
@@ -248,6 +250,7 @@ function renderChat() {
         >
           <input
             id="message-input"
+            maxlength="4000"
             type="text"
             placeholder="Escribí tu mensaje..."
             aria-label="Escribí tu mensaje"
@@ -317,6 +320,11 @@ function renderAbout() {
       <p class="disclaimer">
         Proyecto educativo no oficial, sin afiliación
         con Marvel. Las respuestas serán generadas por IA.
+      </p>
+      <p class="asset-credit">
+        Bandera de Latveria: <a href="https://commons.wikimedia.org/wiki/File:Flag_of_Latveria.svg">Michos / Michoss, Wikimedia Commons</a> ·
+        <a href="https://creativecommons.org/licenses/by-sa/3.0/">CC BY-SA 3.0</a>, sin modificaciones gráficas.
+        DOOM PROTOCOL es una simulación narrativa ficticia.
       </p>
     </section>
   `;
