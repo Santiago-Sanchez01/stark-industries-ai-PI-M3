@@ -2,7 +2,7 @@
 
 **Conversá con Tony Stark. Descubrí DOOM PROTOCOL. Recuperá el control con J.A.R.V.I.S.**
 
-🌐 **[Ver aplicación en vivo](https://stark-industries-ai.vercel.app/)**
+**[GitHub](https://github.com/Santiago-Sanchez01/stark-industries-ai-PI-M3)** · **[Producción](https://stark-industries-ai.vercel.app/)**
 
 ---
 
@@ -92,7 +92,7 @@ La aplicación fue probada exitosamente desde navegadores de escritorio y dos di
 ## 📂 Estructura del proyecto
 
 ```text
-stark-industries-ai/
+stark-industries-ai-PI-M3/
 │
 ├── api/
 │   └── functions.js
@@ -101,13 +101,38 @@ stark-industries-ai/
 │   ├── api.js
 │   ├── app.js
 │   ├── chat.js
+│   ├── cinematic.css
 │   ├── doomProtocol.js
+│   ├── messageView.js
 │   ├── styles.css
 │   └── utils.js
 │
 ├── tests/
 │   ├── app.test.js
+│   ├── doomProtocol.test.js
+│   ├── messageView.test.js
 │   └── utils.test.js
+│
+├── public/
+│   ├── favicon.svg
+│   ├── icons.svg
+│   └── assets/
+│       ├── arc-reactor.svg
+│       ├── doom-cinematic.jpg
+│       ├── doom-portrait.svg
+│       ├── iron-avatar.svg
+│       └── latveria-flag.svg
+│
+├── docs/
+│   ├── design-assets/
+│   │   └── doom-cinematic-source.png
+│   └── screenshots/
+│       ├── home.png
+│       ├── chat-tony.png
+│       ├── doom-protocol.png
+│       ├── recuperacion-jarvis.png
+│       ├── about.png
+│       └── mobile-chat.png
 │
 ├── index.html
 ├── .env.example
@@ -124,6 +149,10 @@ stark-industries-ai/
 - **chat.js:** manejo de mensajes, historial e interacción con el usuario.
 - **api.js:** comunicación HTTP entre frontend y backend.
 - **doomProtocol.js:** estados, activación y recuperación del protocolo.
+- **messageView.js:** construcción segura de mensajes, avatares y avisos por autor.
+- **styles.css / cinematic.css:** estilos generales y composición cinematográfica responsive.
+- **public/assets/:** recursos visuales locales; créditos y licencias al final del documento.
+- **docs/screenshots/:** capturas reales de la aplicación local.
 - **utils.js:** funciones de normalización y transformación de datos.
 - **api/functions.js:** función serverless que consulta Google Gemini.
 - **tests/:** pruebas automatizadas mediante Vitest.
@@ -143,13 +172,13 @@ Para ejecutar el proyecto es necesario contar con:
 ### 1. Clonar el repositorio
 
 ```bash
-git clone URL_DEL_REPOSITORIO
+git clone https://github.com/Santiago-Sanchez01/stark-industries-ai-PI-M3.git
 ```
 
 Ingresar a la carpeta:
 
 ```bash
-cd stark-industries-ai
+cd stark-industries-ai-PI-M3
 ```
 
 ### 2. Instalar dependencias
@@ -212,6 +241,16 @@ http://localhost:3000
 
 Se utiliza `vercel dev` porque permite ejecutar tanto el frontend desarrollado con Vite como las Vercel Serverless Functions.
 
+`vercel dev` es un comando de Vercel CLI, no un script de `package.json`. Para revisar únicamente la interfaz con Vite:
+
+```bash
+npm run dev
+```
+
+Vite por sí solo no ejecuta `/api/functions`; para conversar con Gemini en desarrollo usá `vercel dev` con la variable privada configurada. `npm run preview` permite inspeccionar el frontend compilado después del build, sin ejecutar las funciones serverless.
+
+En PowerShell, si la política de ejecución bloquea `npm.ps1`, los mismos comandos pueden ejecutarse con `npm.cmd`.
+
 ## 🧠 Integración con Google Gemini AI
 
 La aplicación utiliza una arquitectura frontend-backend para proteger la API key.
@@ -256,6 +295,8 @@ Los tests comprueban:
 - Manejo de errores del backend.
 - Selección de Tony Stark.
 - Selección de Doctor Doom.
+- Transiciones NORMAL → ALERT → DOOM → RECOVERY → NORMAL y visibilidad de la recuperación.
+- Identidad visual por autor y tipos de avisos de intrusión y recuperación.
 
 Las solicitudes HTTP se simulan utilizando mocks de `fetch`, por lo que los tests no necesitan conectarse a Gemini ni consumir cuota de la API.
 
@@ -278,12 +319,14 @@ npm test
 ```text
 ✓ tests/utils.test.js (6 tests)
 ✓ tests/app.test.js (4 tests)
+✓ tests/doomProtocol.test.js (1 test)
+✓ tests/messageView.test.js (9 tests)
 
-Test Files  2 passed (2)
-Tests       10 passed (10)
+Test Files  4 passed (4)
+Tests       20 passed (20)
 ```
 
-Se implementaron diez tests unitarios, superando el mínimo de cuatro solicitado en la consigna.
+Verificado el **28/10/2026** mediante `npm run test:run`: **20 tests aprobados**, incluidos los casos parametrizados, sin solicitudes reales a Gemini.
 
 ## 📦 Build de producción
 
@@ -295,7 +338,7 @@ npm run build
 
 Vite genera los archivos de producción dentro de la carpeta `dist/`.
 
-El build fue ejecutado y verificado correctamente durante el desarrollo.
+Build verificado el **28/10/2026** mediante `npm run build`: exitoso, con 11 módulos transformados. No se realizó un nuevo deploy durante esta preentrega.
 
 ## ☁️ Deployment en Vercel
 
@@ -341,20 +384,39 @@ Para un uso público de mayor escala sería recomendable agregar protección adi
 
 ## 📸 Capturas de pantalla
 
-**Sección pendiente de completar después de las mejoras visuales finales.**
+Capturas reales tomadas en Microsoft Edge headless el **28/10/2026**, desde la aplicación del workspace servida localmente con Vite. Desktop: **1366 × 768**. Mobile: **393 px de ancho**, página completa con viewport de 393 × 852; es emulación de tamaño, no una fotografía de un dispositivo físico.
 
-Se incorporarán capturas de:
+Documentan la versión local y no certifican que producción tenga exactamente los mismos cambios. No se editaron mensajes ni se fabricaron respuestas de IA. Para capturar DOOM y RECOVERY se invocó la activación existente desde DevTools y se utilizó el botón de recuperación, sin modificar archivos ni consumir cuota de Gemini. El mensaje inicial de Tony y los avisos son los textos reales de la aplicación. La vista móvil muestra el historial después de la recuperación.
 
-- Home en desktop y mobile.
-- Chat con Tony Stark.
-- Activación de DOOM PROTOCOL.
-- Conversación con Doctor Doom.
-- Recuperación del sistema mediante J.A.R.V.I.S.
-- Vista About.
+### Home
+
+![Home de Stark Industries AI](docs/screenshots/home.png)
+
+### Chat con Tony Stark
+
+![Chat de Tony Stark y reactor Arc](docs/screenshots/chat-tony.png)
+
+### DOOM PROTOCOL
+
+![Doctor Doom, bandera y mapa de Latveria con recuperación disponible](docs/screenshots/doom-protocol.png)
+
+### Recuperación de J.A.R.V.I.S.
+
+![Estado RECOVERY restaurando los sistemas Stark](docs/screenshots/recuperacion-jarvis.png)
+
+### About
+
+![Información del proyecto y créditos de la bandera](docs/screenshots/about.png)
+
+### Vista mobile
+
+![Chat móvil a 393 px con formulario accesible](docs/screenshots/mobile-chat.png)
 
 ## 🤖 Registro del uso de inteligencia artificial
 
-Durante el desarrollo se utilizó ChatGPT como herramienta de asistencia técnica y aprendizaje.
+Durante el desarrollo se utilizó **ChatGPT** como herramienta de asistencia técnica y aprendizaje, y **Codex** para trabajar sobre el repositorio, revisar archivos, aplicar cambios y ejecutar verificaciones. Google Gemini cumple otro rol: genera las respuestas de los dos personajes de la aplicación, Tony Stark y Doctor Doom; J.A.R.V.I.S. interviene como parte del protocolo de recuperación.
+
+El uso de IA incluyó planificación, creación de componentes mediante HTML generado con template literals, diseño visual y responsive, asistencia sobre los prompts de los personajes, pruebas, depuración y revisión de sugerencias. Las propuestas se contrastaron con el código y los requisitos del proyecto antes de incorporarlas.
 
 ### Planificación
 
@@ -387,6 +449,16 @@ La IA colaboró en el análisis de diferentes problemas encontrados durante el d
 
 Se utilizó IA para comprender Vitest, crear funciones reutilizables, implementar mocks y analizar los errores de las pruebas.
 
+### Ejemplos verificables de trabajo con Codex
+
+- Inspección de los módulos, estilos y tests antes de modificar la presentación.
+- Ajuste del panel de Latveria para separar identidad, retrato, mapa y tarjetas, manteniendo los recursos existentes.
+- Revisión de la licencia y atribución de la bandera.
+- Ejecución de Vitest y build; identificación del bloqueo `spawn EPERM` de Windows y repetición autorizada fuera del sandbox.
+- Capturas reales desde Edge y actualización documental de esta preentrega, sin cambios funcionales.
+
+Los system prompts están en `api/functions.js`. El prompt disponible de la ilustración de Doom se conserva en los créditos de recursos visuales. No se reconstruyen ni inventan otros prompts textuales.
+
 ### Validación
 
 Las sugerencias recibidas fueron evaluadas y comprobadas mediante ejecución local, tests unitarios, build de producción y pruebas manuales.
@@ -402,10 +474,11 @@ También se realizaron pruebas de funcionamiento desde dos dispositivos móviles
 - Integración funcional con Google Gemini.
 - Conversaciones con Tony Stark y Doctor Doom.
 - DOOM PROTOCOL y recuperación mediante J.A.R.V.I.S.
-- Diez tests unitarios aprobados.
+- 20 tests aprobados en cuatro archivos (28/10/2026).
 - Build de producción exitoso.
 - Aplicación publicada y probada en Vercel.
-- Mejoras visuales y capturas definitivas pendientes.
+- Diseño cinematográfico y seis capturas reales documentadas.
+- Dos personajes conversacionales: Tony Stark y Doctor Doom.
 
 ## 📚 Créditos y finalidad educativa
 
@@ -416,9 +489,9 @@ Los personajes Tony Stark, Iron Man, Doctor Doom y J.A.R.V.I.S., así como sus r
 Este es un proyecto educativo no oficial, sin afiliación ni respaldo de Marvel o Disney.
 
 Las respuestas de los personajes son generadas mediante inteligencia artificial y forman parte de una experiencia ficticia.
-## Rediseño cinematográfico local
+## Presentación cinematográfica
 
-La vista Chat utiliza un panel de personaje y un chat con scroll interno. Desde 1100 px se distribuyen en dos columnas (aproximadamente 62/38); celulares y tablets apilan el contenido. Las pantallas bajas permiten scroll de página. Se conservan NORMAL, ALERT, DOOM y RECOVERY, los historiales y la integración serverless existente. Los efectos respetan `prefers-reduced-motion`.
+La vista Chat utiliza un panel de personaje y un chat con scroll interno. Desde 1100 px se distribuyen en dos columnas (aproximadamente 62/38); celulares y tablets apilan el contenido. Las pantallas bajas permiten scroll de página. La identidad y la bandera de Doom ocupan la cabecera; el retrato y el mapa decorativo comparten el cuerpo visual y las tarjetas ocupan una franja inferior independiente. El mapa es un SVG ficticio decorativo, no cartografía oficial de Marvel. Se conservan NORMAL, ALERT, DOOM y RECOVERY, los historiales independientes y la integración serverless existente. Los efectos respetan `prefers-reduced-motion`.
 
 ### Recursos visuales y atribución
 
@@ -428,28 +501,16 @@ La vista Chat utiliza un panel de personaje y un chat con scroll interno. Desde 
 
 Stark Industries AI es un proyecto educativo no oficial, sin afiliación ni respaldo de Marvel o Disney. Los personajes pertenecen a sus titulares. DOOM PROTOCOL es una simulación narrativa ficticia y no representa un incidente de seguridad real.
 
-### Revisión visual pendiente
-
-No se recibió el boceto adjunto en la sesión. Revisar manualmente `/home`, `/chat` y `/about` en 375, 393, 768, 1024, 1366, 1440 y 1920 px, incluyendo alturas 768 y 900 px. Comprobar mensajes largos, loading, errores y recuperación con el teclado y zoom. El diseño no requiere nuevas dependencias ni modificaciones de credenciales.
-
-
-### Versión final Iron Man / Doom
-
-- Cabecera unificada, reactor SVG con placas rojas/doradas, retrato cinematográfico asimétrico, contexto cartográfico decorativo y recuperación cian. El mapa es un gráfico ficticio decorativo, no cartografía oficial de Marvel.
-- `src/messageView.js` construye mensajes con `data-speaker="tony|doom|user|system"`. Sus colores son constantes por autor, sin variables del protocolo. El indicador de escritura también identifica su personaje. Se conservan los formatos enviados a Gemini.
 - `public/assets/doom-cinematic.jpg`: ilustración original generada con la herramienta integrada imagegen, sin descargar ilustraciones de terceros. Prompt utilizado: “Use case: stylized-concept. Create an original cinematic digital painting asset for an educational Doctor Doom web interface, NOT a UI screenshot. Wide landscape composition 3:2. Victor Von Doom fills the LEFT half, imposing chest-up three-quarter view, dark emerald hood, finely detailed sculpted gunmetal mask, dramatic emerald rim light, richly textured green fabric, engraved armor and subtle gold cloak clasps. His face is near x=28%, y=32%. RIGHT half shows a distant gothic Latverian fortress and mountains under green storm clouds, lower contrast and dark enough for HTML overlay. Premium realistic concept art, depth, atmospheric fog, intricate materials, restrained green glow. No words, no lettering, no flags, no logos, no watermark, no frames or interface controls. This is a background illustration only; the actual app supplies accessible HTML content.” Generación 1536 × 1024; JPEG optimizado de aproximadamente 409 KiB. No se presenta como recurso CC ni se concede una licencia sobre el personaje; continúan aplicando los derechos de sus titulares. El PNG maestro está en `docs/design-assets/doom-cinematic-source.png`, fuera de los recursos públicos.
 - `public/assets/arc-reactor.svg` y `public/assets/iron-avatar.svg`: gráficos originales creados mediante código SVG para este proyecto. Sin licencia de terceros incorporada. Las referencias a Iron Man pertenecen a sus titulares.
-- La bandera auténtica y su atribución CC BY-SA 3.0 permanecen intactas. El antiguo `doom-portrait.svg` se conserva como recurso previo, pero ya no se muestra.
-- Se sustituyó la capa anterior de ajuste de altura de `styles.css`; el diseño del chat ahora se concentra en `cinematic.css`. Dos columnas desde 1100 px; tabletas con contenido apilado.
-- Validación: build exitoso y 17 tests aprobados (11 anteriores + 6 casos sobre autoría y persistencia). Sin solicitudes reales a Gemini.
-- El boceto final Stark/Doom fue recibido y utilizado. Se inspeccionó la ilustración generada, pero no se dispone de navegador automatizable. Pendiente: renderizado a 375/393/768/1024/1366/1440/1920 px, navegación Atrás/Adelante, zoom, teclado virtual, loading/error y controles. La revisión de código y los tests no sustituyen esa comprobación visual.
 
-### Pulido final de presentación — 27/10/2026
+El antiguo `doom-portrait.svg` se conserva como recurso previo, pero no se muestra en el panel actual. Las capturas de `docs/screenshots/` muestran la interfaz real y sus recursos; no reemplazan ni amplían las licencias y derechos indicados arriba.
 
-Se conserva la composición y todos los recursos gráficos. Home reutiliza `arc-reactor.svg`, con iluminación y patrones HUD discretos; About conserva su contenido con tarjetas responsive. La telemetría mejora contraste y jerarquía, identifica su naturaleza ficticia y el mapa decorativo se simplifica en ventanas bajas. Los textos informativos de la capa cinematográfica tienen un mínimo de 12 px. El formulario y la recuperación siguen fuera del historial desplazable.
+## Verificación de preentrega — 28/10/2026
 
-Los avisos visibles incorporan `noticeType` (`intrusion` o `recovery`) y el renderer lo conserva como `data-notice-type`. Intrusión usa rojo; recuperación usa azul/cian. Estos metadatos son exclusivamente de presentación y no se envían a Gemini. Los mensajes siguen identificándose por `data-speaker`; no dependen del tema activo. Se retiraron colores antiguos genéricos de avisos y el estilo obsoleto del reactor textual. El enlace activo de navegación incluye `aria-current="page"`.
-
-Verificación: 20 tests aprobados (17 anteriores y 3 nuevos casos de tipos de aviso), build exitoso, sintaxis comprobada, IDs y rutas de recursos verificados estáticamente. Sin llamadas reales a Gemini ni cambios de backend o credenciales. No se incorporaron nuevos recursos ni licencias.
-
-Pendiente en navegador (no disponible en esta sesión): capturas y desbordamientos a 375 × 667, 393 × 852, 768 × 1024, 1024 × 768, 1366 × 768, 1440 × 900 y 1920 × 1080; encuadre del rostro; lectura con zoom; navegación SPA y Atrás/Adelante; estados de carga/error; scroll y acceso al formulario y recuperación con teclado virtual. Los tests de estados y la revisión estática no sustituyen esta validación visual.
+- `npm run test:run`: 20/20 tests aprobados, cuatro archivos.
+- `npm run build`: exitoso.
+- Se conservaron código, backend, prompts, estilos, tests y dependencias sin modificaciones durante esta preentrega.
+- Se tomaron y revisaron capturas locales de Home, Tony, Doom, recuperación, About y mobile, sin llamadas reales a Gemini.
+- La revisión previa del panel comprobó seis anchos (375, 393, 768, 1024, 1366 y 1440 px), sin desbordamiento horizontal; en 1366 × 768 y 1440 × 900 la composición principal cabe en el viewport. No sustituye las pruebas en dispositivos físicos ni la revisión con zoom y teclado virtual.
+- La integración de producción existente no se alteró ni se volvió a desplegar. Las capturas locales no constituyen una nueva prueba de respuestas de Gemini en producción.
