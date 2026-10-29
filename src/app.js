@@ -8,6 +8,15 @@ import { initChat } from "./chat.js";
 // Contenedor principal de la aplicación
 const app = document.querySelector("#app");
 
+// Candidata provista por el usuario para revisión local: permiso de publicación pendiente.
+// Dimensiones visuales del navegador, que respeta la orientación EXIF del JPEG.
+const STARK_ILLUSTRATION = {
+  src: "/assets/iron-man-nightwatch.jpg",
+  alt: "Primer plano de la armadura roja y dorada de Iron Man sobre diagramas tecnológicos",
+  width: 1313,
+  height: 736,
+};
+
 // Rutas disponibles
 const routes = {
   "/home": renderHome,
@@ -104,8 +113,11 @@ function renderChat() {
       <div class="character-stage">
         <div class="stark-stage">
           <p class="stage-code">STARK INDUSTRIES / NEURAL INTERFACE 01</p>
-          <div class="arc-display" aria-hidden="true"><img src="/assets/arc-reactor.svg" width="600" height="600" alt="" /><div class="arc-orbit"></div><span class="arc-caption">PALLADIUM CORE / ONLINE</span></div>
+          <div class="stark-stage__visual${STARK_ILLUSTRATION ? " stark-stage__visual--illustrated" : ""}">
+          ${STARK_ILLUSTRATION ? `<div class="stark-scene-frame"><img class="stark-scene" src="${STARK_ILLUSTRATION.src}" alt="${STARK_ILLUSTRATION.alt}" width="${STARK_ILLUSTRATION.width}" height="${STARK_ILLUSTRATION.height}" /></div>` : ""}
           <div class="stage-identity"><p class="eyebrow">GENIO. INVENTOR. VISIONARIO.</p><h2>TONY STARK</h2><p>EL INGENIO DETRÁS DE LA ARMADURA</p></div>
+          <div class="arc-display" aria-hidden="true"><div class="arc-core"><img src="/assets/arc-reactor.svg" width="600" height="600" alt="" /><div class="arc-orbit"></div></div><span class="arc-caption">PALLADIUM CORE // ONLINE</span></div>
+          </div>
           <div class="telemetry"><div><span>J.A.R.V.I.S.</span><strong>EN LÍNEA</strong></div><div><span>ARC REACTOR</span><strong>100 %</strong></div><div><span>STARK NETWORK</span><strong>ESTABLE</strong></div></div>
           <p class="stage-footnote">MALIBU, CA // SIMULACIÓN EDUCATIVA</p>
         </div>
