@@ -1,0 +1,29 @@
+.jarvis-welcome {
+  box-sizing:border-box;
+  width:min(560px,calc(100% - 24px));
+  max-height:calc(100dvh - 24px);
+  margin:auto;
+  padding:clamp(16px,4vw,28px);
+  overflow:auto;
+  overscroll-behavior:contain;
+  color:#e8f6ff;
+  background:radial-gradient(ellipse at top right,#17465c66,transparent 65%),#07131f;
+  border:1px solid #65ddff80;
+  border-radius:10px;
+  box-shadow:0 20px 80px #0009,inset 0 1px #b9efff20;
+  font:15px/1.65 "Segoe UI",Arial,sans-serif;
+  overflow-wrap:anywhere;
+}
+.jarvis-welcome[open] { animation:jarvis-welcome-enter .18s ease-out; }
+.jarvis-welcome::backdrop { background:#010710cc; }
+.jarvis-welcome p { margin:0 0 18px; }
+.jarvis-welcome .jarvis-welcome__eyebrow { color:#74e2ff; font-size:12px; letter-spacing:1px; }
+.jarvis-welcome h2 { margin:0 0 16px; font-size:clamp(23px,5vw,29px); line-height:1.2; color:#effaff; }
+.jarvis-welcome__warning { margin:20px 0; padding:14px; border:1px solid #e6838750; border-left:3px solid #e68387; border-radius:5px; background:#31182155; }
+.jarvis-welcome__warning h3 { margin:0 0 10px; color:#ffa9ad; font-size:12px; letter-spacing:.6px; line-height:1.5; }
+.jarvis-welcome__warning p { margin:0; }
+.jarvis-welcome__signoff { color:#b1d0df; font-style:italic; }
+.jarvis-welcome button { display:block; width:100%; min-height:48px; padding:13px; border:1px solid #9eebff; border-radius:5px; background:#64ddff; color:#04121e; font:700 12px/1.5 "Segoe UI",Arial,sans-serif; white-space:normal; cursor:pointer; }
+.jarvis-welcome button:focus-visible { outline:2px solid #fff; outline-offset:3px; }
+@keyframes jarvis-welcome-enter { from { opacity:0; transform:translateY(6px); } to { opacity:1; transform:translateY(0); } }
+@media(prefers-reduced-motion:reduce) { .jarvis-welcome[open] { animation:none; } }

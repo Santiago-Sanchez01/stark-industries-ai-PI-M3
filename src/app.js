@@ -1,6 +1,8 @@
 
 import "./styles.css";
 import "./cinematic.css";
+import "./chatWelcome.css";
+import { showChatWelcome } from "./chatWelcome.js";
 
 import { initDoomProtocol } from "./doomProtocol.js";
 import { initChat } from "./chat.js";
@@ -343,7 +345,10 @@ function renderAbout() {
 }
 
 // Renderiza la vista correspondiente a la URL
+let disposeChatWelcome = () => {};
+
 function render() {
+  disposeChatWelcome();
   const path = window.location.pathname;
   const view = routes[path] || renderHome;
 
@@ -369,6 +374,7 @@ function render() {
   if (path === "/chat") {
     initChat();
     initDoomProtocol();
+    disposeChatWelcome = showChatWelcome();
   }
 }
 
