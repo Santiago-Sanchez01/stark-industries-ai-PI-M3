@@ -396,7 +396,7 @@ Documentan la versión local y no certifican que producción tenga exactamente l
 
 ### Chat con Tony Stark
 
-![Chat de Tony Stark y reactor Arc](docs/screenshots/chat-tony.png)
+![Chat de Tony Stark ](docs/screenshots/tony-nightwatch-1440-local.png)
 
 ### DOOM PROTOCOL
 
@@ -412,7 +412,7 @@ Documentan la versión local y no certifican que producción tenga exactamente l
 
 ### Vista mobile
 
-![Chat móvil a 393 px con formulario accesible](docs/screenshots/mobile-chat.png)
+![Chat móvil con formulario accesible](docs/screenshots/tony-nightwatch-mobile-local.png)
 
 ## 🤖 Registro del uso de inteligencia artificial
 
